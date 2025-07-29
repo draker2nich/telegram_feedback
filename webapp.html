@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель поддержки</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            flex: 1;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 12px 20px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .tickets-container {
+            display: grid;
+            gap: 15px;
+        }
+
+        .ticket {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticket:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+        }
+
+        .ticket::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .ticket-info {
+            flex: 1;
+        }
+
+        .ticket-id {
+            font-size: 14px;
+            color: #fff;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .ticket-category {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .ticket-user {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .ticket-time {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        .ticket-question {
+            margin: 15px 0;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .ticket-photo {
+            margin: 10px 0;
+        }
+
+        .ticket-photo img {
+            max-width: 100%;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-view { border-left: 3px solid #4ecdc4; }
+        .btn-reject { border-left: 3px solid #ff6b6b; }
+        .btn-respond { border-left: 3px solid #45b7d1; }
+        .btn-warn { border-left: 3px solid #ffa500; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            color: #fff;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 24px;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .template-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .template-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .template-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .template-text {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .settings-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .banned-user {
+            background: rgba(255, 107, 107, 0.2);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .banned-user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .banned-user-info {
+            flex: 1;
+        }
+
+        .banned-username {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .banned-date {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .banned-ticket-info {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.6;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+            
+            .ticket-actions {
+                justify-content: center;
+            }
+            
+            .modal-content {
+                padding: 20px;
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="header">
+            <h1>🛠️ Админ-панель поддержки</h1>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingCount">0</div>
+                    <div class="stat-label">В ожидании</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="viewedCount">0</div>
+                    <div class="stat-label">Просмотрено</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="bannedCount">0</div>
+                    <div class="stat-label">Заблокировано</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Навигация -->
+        <div class="navigation">
+            <button class="nav-btn active" onclick="showSection('tickets')">📋 Тикеты</button>
+            <button class="nav-btn" onclick="showSection('banned')">🚫 Заблокированные</button>
+            <button class="nav-btn" onclick="showSection('settings')">⚙️ Настройки</button>
+        </div>
+
+        <!-- Секция тикетов -->
+        <div id="ticketsSection" class="section">
+            <div class="loading" id="ticketsLoading">
+                <div class="spinner"></div>
+                <div>Загрузка тикетов...</div>
+            </div>
+            <div class="tickets-container" id="ticketsContainer"></div>
+        </div>
+
+        <!-- Секция заблокированных -->
+        <div id="bannedSection" class="section hidden">
+            <div class="loading" id="bannedLoading">
+                <div class="spinner"></div>
+                <div>Загрузка заблокированных пользователей...</div>
+            </div>
+            <div id="bannedContainer"></div>
+        </div>
+
+        <!-- Секция настроек -->
+        <div id="settingsSection" class="section hidden">
+            <!-- Приветственное сообщение -->
+            <div class="settings-section">
+                <h3>💬 Приветственное сообщение</h3>
+                <div class="form-group">
+                    <textarea class="form-control" id="welcomeMessage" placeholder="Введите приветственное сообщение..."></textarea>
+                </div>
+                <button class="btn-primary" onclick="updateWelcomeMessage()">Сохранить</button>
+            </div>
+
+            <!-- Категории -->
+            <div class="settings-section">
+                <h3>📋 Категории</h3>
+                <div id="categoriesList"></div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="newCategoryName" placeholder="Название новой категории">
+                </div>
+                <button class="btn-primary" onclick="addCategory()">Добавить категорию</button>
+            </div>
+
+            <!-- Шаблоны сообщений -->
+            <div class="settings-section">
+                <h3>📝 Шаблоны сообщений</h3>
+                <div id="templatesList"></div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="newTemplateName" placeholder="Название шаблона">
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" id="newTemplateText" placeholder="Текст шаблона"></textarea>
+                </div>
+                <button class="btn-primary" onclick="addTemplate()">Добавить шаблон</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно ответа -->
+    <div id="responseModal" class="modal">
+        <div class="modal-content">
+            <h3>💬 Ответить на тикет #<span id="responseTicketId"></span></h3>
+            
+            <div class="form-group">
+                <label>Выберите шаблон (необязательно):</label>
+                <div class="template-list" id="responseTemplateList"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Ваш ответ:</label>
+                <textarea class="form-control" id="responseText" placeholder="Введите ваш ответ..."></textarea>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="closeModal('responseModal')">Отмена</button>
+                <button class="btn-primary" onclick="sendResponse()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно предупреждений -->
+    <div id="warnModal" class="modal">
+        <div class="modal-content">
+            <h3>⚠️ Действия с пользователем</h3>
+            <p>Выберите действие для пользователя <strong id="warnUsername"></strong>:</p>
+            
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="closeModal('warnModal')">Отмена</button>
+                <button class="btn" onclick="warnUser()" style="background: rgba(255, 165, 0, 0.3); border-color: #ffa500;">⚠️ Предупредить</button>
+                <button class="btn" onclick="banUser()" style="background: rgba(255, 107, 107, 0.3); border-color: #ff6b6b;">🚫 Заблокировать</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        // Глобальные переменные
+        let currentTickets = [];
+        let currentBannedUsers = [];
+        let currentTemplates = [];
+        let currentCategories = [];
+        let selectedTicket = null;
+        let selectedUser = null;
+
+        // API функции
+        async function sendCommand(action, data = {}) {
+            const command = {
+                action: action,
+                ...data
+            };
+            
+            try {
+                tg.sendData(`/admin_${JSON.stringify(command)}`);
+                return true;
+            } catch (error) {
+                console.error('Ошибка отправки команды:', error);
+                return false;
+            }
+        }
+
+        // Загрузка данных
+        async function loadTickets() {
+            document.getElementById('ticketsLoading').classList.remove('hidden');
+            
+            // Симуляция загрузки (в реальном приложении здесь будет API запрос)
+            setTimeout(() => {
+                currentTickets = generateMockTickets();
+                renderTickets();
+                updateStats();
+                document.getElementById('ticketsLoading').classList.add('hidden');
+            }, 1000);
+        }
+
+        async function loadBannedUsers() {
+            document.getElementById('bannedLoading').classList.remove('hidden');
+            
+            setTimeout(() => {
+                currentBannedUsers = generateMockBannedUsers();
+                renderBannedUsers();
+                document.getElementById('bannedLoading').classList.add('hidden');
+            }, 800);
+        }
+
+        async function loadSettings() {
+            // Загрузка настроек
+            currentTemplates = generateMockTemplates();
+            currentCategories = generateMockCategories();
+            
+            renderTemplates();
+            renderCategories();
+            
+            // Загрузка приветственного сообщения
+            document.getElementById('welcomeMessage').value = 
+                "👋 Добро пожаловать в службу поддержки!\n\nВыберите категорию вашего вопроса:";
+        }
+
+        // Генерация mock данных
+        function generateMockTickets() {
+            const categories = ['📋 Общие вопросы', '💳 Вопросы по оплате', '⭐ Качество сервиса'];
+            const users = ['user123', 'client_456', 'support_user', 'new_customer'];
+            const questions = [
+                'Не могу войти в свой аккаунт, помогите пожалуйста',
+                'У меня не проходит платеж, что делать?',
+                'Очень долго загружается страница',
+                'Как изменить пароль?',
+                'Проблема с доставкой заказа'
+            ];
+
+            const tickets = [];
+            for (let i = 1; i <= 8; i++) {
+                tickets.push({
+                    id: i,
+                    user_id: 100000 + i,
+                    username: users[Math.floor(Math.random() * users.length)],
+                    category_name: categories[Math.floor(Math.random() * categories.length)],
+                    question: questions[Math.floor(Math.random() * questions.length)],
+                    photo_id: Math.random() > 0.7 ? 'photo_' + i : null,
+                    status: 'pending',
+                    created_at: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString()
+                });
+            }
+            return tickets;
+        }
+
+        function generateMockBannedUsers() {
+            return [
+                {
+                    user_id: 200001,
+                    username: 'spam_user',
+                    banned_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                    category_name: '📋 Общие вопросы',
+                    last_question: 'Спам сообщение с рекламой',
+                    ticket_created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    user_id: 200002,
+                    username: 'toxic_user',
+                    banned_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    category_name: '⭐ Качество сервиса',
+                    last_question: 'Оскорбительное сообщение',
+                    ticket_created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ];
+        }
+
+        function generateMockTemplates() {
+            return [
+                { id: 1, name: 'Спасибо за обращение', text: 'Спасибо за обращение! Ваш вопрос принят в работу.' },
+                { id: 2, name: 'Требуется уточнение', text: 'Для решения вашего вопроса нам нужна дополнительная информация.' },
+                { id: 3, name: 'Вопрос решен', text: 'Ваш вопрос успешно решен. Спасибо за обращение!' }
+            ];
+        }
+
+        function generateMockCategories() {
+            return [
+                { id: 1, name: '📋 Общие вопросы' },
+                { id: 2, name: '💳 Вопросы по оплате' },
+                { id: 3, name: '⭐ Качество сервиса' }
+            ];
+        }
+
+        // Отрисовка интерфейса
+        function renderTickets() {
+            const container = document.getElementById('ticketsContainer');
+            
+            if (currentTickets.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>Нет новых тикетов</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = currentTickets.map(ticket => `
+                <div class="ticket" data-ticket-id="${ticket.id}">
+                    <div class="ticket-header">
+                        <div class="ticket-info">
+                            <div class="ticket-id">Тикет #${ticket.id}</div>
+                            <div class="ticket-category">${ticket.category_name}</div>
+                            <div class="ticket-user">👤 ${ticket.username}</div>
+                            <div class="ticket-time">🕐 ${formatDate(ticket.created_at)}</div>
+                        </div>
+                    </div>
+                    <div class="ticket-question">
+                        ${ticket.question}
+                    </div>
+                    ${ticket.photo_id ? `
+                        <div class="ticket-photo">
+                            <img src="https://via.placeholder.com/300x200/667eea/ffffff?text=Прикрепленное+фото" alt="Фото">
+                        </div>
+                    ` : ''}
+                    <div class="ticket-actions">
+                        <button class="btn btn-view" onclick="viewTicket(${ticket.id})">
+                            👀 Просмотреть
+                        </button>
+                        <button class="btn btn-reject" onclick="rejectTicket(${ticket.id})">
+                            ❌ Отклонить
+                        </button>
+                        <button class="btn btn-respond" onclick="openResponseModal(${ticket.id})">
+                            💬 Ответить
+                        </button>
+                        <button class="btn btn-warn" onclick="openWarnModal(${ticket.id})">
+                            ❗ Действия
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderBannedUsers() {
+            const container = document.getElementById('bannedContainer');
+            
+            if (currentBannedUsers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <div>Нет заблокированных пользователей</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = currentBannedUsers.map(user => `
+                <div class="banned-user">
+                    <div class="banned-user-header">
+                        <div class="banned-user-info">
+                            <div class="banned-username">👤 ${user.username}</div>
+                            <div class="banned-date">🚫 Заблокирован: ${formatDate(user.banned_at)}</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="unbanUser(${user.user_id})">
+                            ✅ Разблокировать
+                        </button>
+                    </div>
+                    ${user.last_question ? `
+                        <div class="banned-ticket-info">
+                            <div style="margin-bottom: 5px;"><strong>Категория:</strong> ${user.category_name}</div>
+                            <div style="margin-bottom: 5px;"><strong>Последнее сообщение:</strong></div>
+                            <div style="font-style: italic; opacity: 0.8;">${user.last_question}</div>
+                            <div style="margin-top: 5px; font-size: 12px; opacity: 0.6;">
+                                📅 ${formatDate(user.ticket_created_at)}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderTemplates() {
+            const container = document.getElementById('templatesList');
+            container.innerHTML = currentTemplates.map(template => `
+                <div class="template-item">
+                    <div class="template-name">${template.name}</div>
+                    <div class="template-text">${template.text}</div>
+                    <button class="btn" onclick="deleteTemplate(${template.id})" style="margin-top: 10px; background: rgba(255, 107, 107, 0.2);">
+                        🗑️ Удалить
+                    </button>
+                </div>
+            `).join('');
+
+            // Обновляем список в модальном окне
+            const modalList = document.getElementById('responseTemplateList');
+            modalList.innerHTML = currentTemplates.map(template => `
+                <div class="template-item" onclick="selectTemplate('${template.text.replace(/'/g, "\\'")}')">
+                    <div class="template-name">${template.name}</div>
+                    <div class="template-text">${template.text}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesList');
+            container.innerHTML = currentCategories.map(category => `
+                <div class="template-item">
+                    <div class="template-name">${category.name}</div>
+                    <button class="btn" onclick="deleteCategory(${category.id})" style="margin-top: 10px; background: rgba(255, 107, 107, 0.2);">
+                        🗑️ Удалить
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Вспомогательные функции
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHours / 24);
+
+            if (diffMins < 60) {
+                return `${diffMins} мин назад`;
+            } else if (diffHours < 24) {
+                return `${diffHours} ч назад`;
+            } else if (diffDays < 7) {
+                return `${diffDays} дн назад`;
+            } else {
+                return date.toLocaleDateString('ru-RU');
+            }
+        }
+
+        function updateStats() {
+            const pendingCount = currentTickets.filter(t => t.status === 'pending').length;
+            const viewedCount = currentTickets.filter(t => t.status === 'viewed').length;
+            const bannedCount = currentBannedUsers.length;
+
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('viewedCount').textContent = viewedCount;
+            document.getElementById('bannedCount').textContent = bannedCount;
+        }
+
+        // Навигация
+        function showSection(sectionName) {
+            // Скрываем все секции
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Убираем активный класс с кнопок
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Показываем нужную секцию
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+            event.target.classList.add('active');
+
+            // Загружаем данные для секции
+            switch (sectionName) {
+                case 'tickets':
+                    loadTickets();
+                    break;
+                case 'banned':
+                    loadBannedUsers();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        // Действия с тикетами
+        async function viewTicket(ticketId) {
+            const success = await sendCommand('view_ticket', { ticket_id: ticketId });
+            if (success) {
+                // Обновляем статус тикета локально
+                const ticket = currentTickets.find(t => t.id === ticketId);
+                if (ticket) {
+                    ticket.status = 'viewed';
+                    renderTickets();
+                    updateStats();
+                }
+                
+                tg.showAlert('Тикет отмечен как просмотренный');
+            }
+        }
+
+        async function rejectTicket(ticketId) {
+            const success = await sendCommand('reject_ticket', { ticket_id: ticketId });
+            if (success) {
+                // Удаляем тикет из списка
+                currentTickets = currentTickets.filter(t => t.id !== ticketId);
+                renderTickets();
+                updateStats();
+                
+                tg.showAlert('Тикет отклонен');
+            }
+        }
+
+        // Модальные окна
+        function openResponseModal(ticketId) {
+            const ticket = currentTickets.find(t => t.id === ticketId);
+            if (!ticket) return;
+
+            selectedTicket = ticket;
+            document.getElementById('responseTicketId').textContent = ticketId;
+            document.getElementById('responseText').value = '';
+            document.getElementById('responseModal').style.display = 'block';
+        }
+
+        function openWarnModal(ticketId) {
+            const ticket = currentTickets.find(t => t.id === ticketId);
+            if (!ticket) return;
+
+            selectedUser = {
+                user_id: ticket.user_id,
+                username: ticket.username,
+                ticket_id: ticketId
+            };
+            
+            document.getElementById('warnUsername').textContent = ticket.username;
+            document.getElementById('warnModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            selectedTicket = null;
+            selectedUser = null;
+        }
+
+        function selectTemplate(templateText) {
+            document.getElementById('responseText').value = templateText;
+        }
+
+        async function sendResponse() {
+            const responseText = document.getElementById('responseText').value.trim();
+            if (!responseText) {
+                tg.showAlert('Введите текст ответа');
+                return;
+            }
+
+            if (!selectedTicket) return;
+
+            const success = await sendCommand('respond_ticket', {
+                ticket_id: selectedTicket.id,
+                response: responseText
+            });
+
+            if (success) {
+                // Удаляем тикет из списка
+                currentTickets = currentTickets.filter(t => t.id !== selectedTicket.id);
+                renderTickets();
+                updateStats();
+                
+                closeModal('responseModal');
+                tg.showAlert('Ответ отправлен');
+            }
+        }
+
+        async function warnUser() {
+            if (!selectedUser) return;
+
+            const success = await sendCommand('warn_user', {
+                user_id: selectedUser.user_id
+            });
+
+            if (success) {
+                closeModal('warnModal');
+                tg.showAlert('Предупреждение отправлено');
+            }
+        }
+
+        async function banUser() {
+            if (!selectedUser) return;
+
+            const success = await sendCommand('ban_user', {
+                user_id: selectedUser.user_id,
+                ticket_id: selectedUser.ticket_id
+            });
+
+            if (success) {
+                // Добавляем пользователя в список заблокированных
+                const ticket = currentTickets.find(t => t.id === selectedUser.ticket_id);
+                if (ticket) {
+                    currentBannedUsers.unshift({
+                        user_id: selectedUser.user_id,
+                        username: selectedUser.username,
+                        banned_at: new Date().toISOString(),
+                        category_name: ticket.category_name,
+                        last_question: ticket.question,
+                        ticket_created_at: ticket.created_at
+                    });
+                }
+
+                // Удаляем тикет из списка
+                currentTickets = currentTickets.filter(t => t.id !== selectedUser.ticket_id);
+                renderTickets();
+                updateStats();
+                
+                closeModal('warnModal');
+                tg.showAlert('Пользователь заблокирован');
+            }
+        }
+
+        async function unbanUser(userId) {
+            const success = await sendCommand('unban_user', { user_id: userId });
+            
+            if (success) {
+                // Удаляем пользователя из списка заблокированных
+                currentBannedUsers = currentBannedUsers.filter(u => u.user_id !== userId);
+                renderBannedUsers();
+                updateStats();
+                
+                tg.showAlert('Пользователь разблокирован');
+            }
+        }
+
+        // Настройки
+        async function updateWelcomeMessage() {
+            const message = document.getElementById('welcomeMessage').value.trim();
+            if (!message) {
+                tg.showAlert('Введите приветственное сообщение');
+                return;
+            }
+
+            const success = await sendCommand('update_welcome', { message: message });
+            if (success) {
+                tg.showAlert('Приветственное сообщение обновлено');
+            }
+        }
+
+        async function addCategory() {
+            const name = document.getElementById('newCategoryName').value.trim();
+            if (!name) {
+                tg.showAlert('Введите название категории');
+                return;
+            }
+
+            const newCategory = {
+                id: currentCategories.length + 1,
+                name: name
+            };
+
+            currentCategories.push(newCategory);
+            renderCategories();
+            document.getElementById('newCategoryName').value = '';
+            
+            tg.showAlert('Категория добавлена');
+        }
+
+        async function deleteCategory(categoryId) {
+            currentCategories = currentCategories.filter(c => c.id !== categoryId);
+            renderCategories();
+            tg.showAlert('Категория удалена');
+        }
+
+        async function addTemplate() {
+            const name = document.getElementById('newTemplateName').value.trim();
+            const text = document.getElementById('newTemplateText').value.trim();
+            
+            if (!name || !text) {
+                tg.showAlert('Заполните все поля');
+                return;
+            }
+
+            const newTemplate = {
+                id: currentTemplates.length + 1,
+                name: name,
+                text: text
+            };
+
+            currentTemplates.push(newTemplate);
+            renderTemplates();
+            
+            document.getElementById('newTemplateName').value = '';
+            document.getElementById('newTemplateText').value = '';
+            
+            tg.showAlert('Шаблон добавлен');
+        }
+
+        async function deleteTemplate(templateId) {
+            currentTemplates = currentTemplates.filter(t => t.id !== templateId);
+            renderTemplates();
+            tg.showAlert('Шаблон удален');
+        }
+
+        // Закрытие модальных окон по клику вне них
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+                selectedTicket = null;
+                selectedUser = null;
+            }
+        });
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTickets();
+            updateStats();
+        });
+
+        // Обработка событий от Telegram WebApp
+        tg.onEvent('mainButtonClicked', () => {
+            // Обработка нажатия основной кнопки
+        });
+
+        tg.onEvent('backButtonClicked', () => {
+            // Обработка нажатия кнопки назад
+            tg.close();
+        });
+
+        // Периодическое обновление данных
+        setInterval(() => {
+            if (!document.querySelector('.modal[style*="block"]')) {
+                // Обновляем данные только если нет открытых модальных окон
+                const activeSection = document.querySelector('.nav-btn.active').textContent;
+                if (activeSection.includes('Тикеты')) {
+                    loadTickets();
+                } else if (activeSection.includes('Заблокированные')) {
+                    loadBannedUsers();
+                }
+            }
+        }, 30000); // Обновление каждые 30 секунд
+    </script>
+</body>
+</html>
