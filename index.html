@@ -637,61 +637,93 @@
         let selectedTicket = null;
         let selectedUser = null;
         let isLoading = false;
-        let pendingRequests = new Map();
+        let requestQueue = [];
+        let currentRequestId = null;
 
-        // Функция отправки команд боту
+        // Функция отправки команд боту через WebApp
         function sendCommand(action, data = {}) {
             return new Promise((resolve, reject) => {
                 if (isLoading) {
-                    reject(new Error('Предыдущая команда ещё выполняется'));
+                    // Добавляем в очередь
+                    requestQueue.push({ action, data, resolve, reject });
                     return;
                 }
 
+                isLoading = true;
+                currentRequestId = Date.now();
+
                 const command = {
                     action: action,
+                    requestId: currentRequestId,
                     ...data
                 };
 
-                const requestId = Date.now();
-                const commandString = `/webapp_${JSON.stringify(command)}`;
-
                 try {
-                    console.log('Отправка команды:', commandString);
+                    const commandString = `/webapp_${JSON.stringify(command)}`;
+                    console.log('Отправка команды через WebApp:', commandString);
                     
-                    // Сохраняем запрос для обработки ответа
-                    pendingRequests.set(action, { resolve, reject, requestId });
-                    
-                    // Отправляем команду боту
+                    // Отправляем данные через Telegram WebApp API
                     tg.sendData(commandString);
+                    
+                    // Сохраняем Promise для последующего разрешения
+                    window.currentPromise = { resolve, reject, action };
                     
                     // Устанавливаем таймаут
                     setTimeout(() => {
-                        if (pendingRequests.has(action)) {
-                            pendingRequests.delete(action);
-                            reject(new Error('Таймаут выполнения команды'));
+                        if (window.currentPromise && window.currentPromise.action === action) {
+                            window.currentPromise.reject(new Error('Таймаут выполнения команды'));
+                            window.currentPromise = null;
+                            isLoading = false;
+                            processQueue();
                         }
-                    }, 10000);
+                    }, 15000);
                     
                 } catch (error) {
                     console.error('Ошибка отправки команды:', error);
-                    pendingRequests.delete(action);
+                    isLoading = false;
                     reject(error);
+                    processQueue();
                 }
             });
+        }
+
+        // Обработка очереди запросов
+        function processQueue() {
+            if (requestQueue.length > 0 && !isLoading) {
+                const nextRequest = requestQueue.shift();
+                sendCommand(nextRequest.action, nextRequest.data)
+                    .then(nextRequest.resolve)
+                    .catch(nextRequest.reject);
+            }
+        }
+
+        // Обработка ответов от бота (через события WebApp)
+        function handleBotResponse(success, message, data = null) {
+            console.log('Получен ответ от бота:', { success, message, data });
+            
+            if (window.currentPromise) {
+                if (success) {
+                    window.currentPromise.resolve(data);
+                } else {
+                    window.currentPromise.reject(new Error(message || 'Ошибка выполнения команды'));
+                }
+                window.currentPromise = null;
+            }
+            
+            isLoading = false;
+            processQueue();
         }
 
         // Функция загрузки данных из бота
         async function loadDataFromBot(endpoint) {
             try {
-                isLoading = true;
-                const response = await sendCommand(endpoint);
-                return response || [];
+                console.log(`Загрузка данных: ${endpoint}`);
+                const data = await sendCommand(endpoint);
+                return Array.isArray(data) ? data : (data || []);
             } catch (error) {
                 console.error(`Ошибка загрузки ${endpoint}:`, error);
                 showNotification(`Ошибка загрузки данных: ${error.message}`, 'error');
                 return [];
-            } finally {
-                isLoading = false;
             }
         }
 
@@ -700,13 +732,22 @@
             document.getElementById('ticketsLoading').classList.remove('hidden');
             
             try {
+                console.log('Загрузка тикетов...');
                 const tickets = await loadDataFromBot('get_tickets');
-                currentTickets = tickets;
+                console.log('Получены тикеты:', tickets);
+                
+                currentTickets = Array.isArray(tickets) ? tickets : [];
                 renderTickets();
                 updateStats();
+                
+                if (currentTickets.length === 0) {
+                    console.log('Тикеты не найдены');
+                }
             } catch (error) {
                 console.error('Ошибка загрузки тикетов:', error);
-                showNotification('Ошибка загрузки тикетов', 'error');
+                showNotification('Не удалось загрузить тикеты', 'error');
+                currentTickets = [];
+                renderTickets();
             } finally {
                 document.getElementById('ticketsLoading').classList.add('hidden');
             }
@@ -716,12 +757,18 @@
             document.getElementById('bannedLoading').classList.remove('hidden');
             
             try {
+                console.log('Загрузка заблокированных пользователей...');
                 const bannedUsers = await loadDataFromBot('get_banned_users');
-                currentBannedUsers = bannedUsers;
+                console.log('Получены заблокированные:', bannedUsers);
+                
+                currentBannedUsers = Array.isArray(bannedUsers) ? bannedUsers : [];
                 renderBannedUsers();
+                updateStats();
             } catch (error) {
                 console.error('Ошибка загрузки заблокированных:', error);
-                showNotification('Ошибка загрузки заблокированных пользователей', 'error');
+                showNotification('Не удалось загрузить заблокированных пользователей', 'error');
+                currentBannedUsers = [];
+                renderBannedUsers();
             } finally {
                 document.getElementById('bannedLoading').classList.add('hidden');
             }
@@ -729,22 +776,46 @@
 
         async function loadSettings() {
             try {
+                console.log('Загрузка настроек...');
+                
+                // Загружаем все настройки параллельно
                 const [templates, categories, welcomeData] = await Promise.all([
-                    loadDataFromBot('get_templates'),
-                    loadDataFromBot('get_categories'),
-                    loadDataFromBot('get_welcome')
+                    loadDataFromBot('get_templates').catch(e => {
+                        console.error('Ошибка загрузки шаблонов:', e);
+                        return [];
+                    }),
+                    loadDataFromBot('get_categories').catch(e => {
+                        console.error('Ошибка загрузки категорий:', e);
+                        return [];
+                    }),
+                    loadDataFromBot('get_welcome').catch(e => {
+                        console.error('Ошибка загрузки приветствия:', e);
+                        return { message: '' };
+                    })
                 ]);
                 
-                currentTemplates = templates;
-                currentCategories = categories;
+                console.log('Получены настройки:', { templates, categories, welcomeData });
+                
+                currentTemplates = Array.isArray(templates) ? templates : [];
+                currentCategories = Array.isArray(categories) ? categories : [];
                 
                 renderTemplates();
                 renderCategories();
                 
-                document.getElementById('welcomeMessage').value = welcomeData?.message || '';
+                // Устанавливаем приветственное сообщение
+                const welcomeMessage = welcomeData && welcomeData.message ? welcomeData.message : '';
+                document.getElementById('welcomeMessage').value = welcomeMessage;
+                
             } catch (error) {
                 console.error('Ошибка загрузки настроек:', error);
-                showNotification('Ошибка загрузки настроек', 'error');
+                showNotification('Не удалось загрузить настройки', 'error');
+                
+                // Устанавливаем пустые значения
+                currentTemplates = [];
+                currentCategories = [];
+                renderTemplates();
+                renderCategories();
+                document.getElementById('welcomeMessage').value = '';
             }
         }
 
@@ -1250,25 +1321,70 @@
 
         // Обработка событий от Telegram WebApp
         tg.onEvent('mainButtonClicked', () => {
-            // Обработка нажатия основной кнопки
+            console.log('Main button clicked');
         });
 
         tg.onEvent('backButtonClicked', () => {
-            // Обработка нажатия кнопки назад
+            console.log('Back button clicked');
             tg.close();
         });
 
-        // Слушаем сообщения от бота (если они приходят через postMessage)
+        // Обработчик ответов от бота через WebApp
+        tg.onEvent('webAppDataReceived', (data) => {
+            console.log('WebApp data received:', data);
+            try {
+                // Парсим ответ от бота
+                if (data && data.data) {
+                    const response = JSON.parse(data.data);
+                    if (response.success !== undefined) {
+                        handleBotResponse(response.success, response.message, response.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка обработки ответа от бота:', error);
+                handleBotResponse(false, 'Ошибка обработки ответа');
+            }
+        });
+
+        // Альтернативный обработчик для получения данных
         window.addEventListener('message', (event) => {
-            if (typeof event.data === 'string' && event.data.startsWith('/webapp_response_')) {
-                try {
-                    const responseData = JSON.parse(event.data.replace('/webapp_response_', ''));
-                    handleBotResponse(responseData);
-                } catch (error) {
-                    console.error('Ошибка парсинга ответа от бота:', error);
+            console.log('Message received:', event);
+            
+            if (event.data && typeof event.data === 'object') {
+                // Проверяем, что это ответ от нашего бота
+                if (event.data.type === 'webapp_response') {
+                    handleBotResponse(event.data.success, event.data.message, event.data.data);
+                }
+            } else if (typeof event.data === 'string') {
+                // Обрабатываем строковые ответы
+                if (event.data.startsWith('success:')) {
+                    handleBotResponse(true, event.data.substring(8));
+                } else if (event.data.startsWith('error:')) {
+                    handleBotResponse(false, event.data.substring(6));
                 }
             }
         });
+
+        // Добавляем глобальные обработчики для отладки
+        window.webAppDebug = {
+            handleSuccess: (message, data) => {
+                console.log('Debug: Success response', message, data);
+                handleBotResponse(true, message, data);
+            },
+            handleError: (message) => {
+                console.log('Debug: Error response', message);
+                handleBotResponse(false, message);
+            },
+            getCurrentState: () => {
+                return {
+                    isLoading,
+                    queueLength: requestQueue.length,
+                    currentPromise: !!window.currentPromise,
+                    tickets: currentTickets.length,
+                    banned: currentBannedUsers.length
+                };
+            }
+        };
 
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', () => {
