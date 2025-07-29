@@ -40,37 +40,10 @@
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .auto-refresh-indicator {
-            font-size: 12px;
-            opacity: 0.7;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 5px;
-        }
-
-        .pulse {
-            width: 8px;
-            height: 8px;
-            background: #4ecdc4;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.4; }
-            50% { opacity: 1; }
-            100% { opacity: 0.4; }
         }
 
         .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            display: flex;
             gap: 15px;
             margin-top: 15px;
         }
@@ -80,38 +53,15 @@
             backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 15px;
+            flex: 1;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .stat-card.updated::before {
-            left: 100%;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .stat-number {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 5px;
-            transition: all 0.3s ease;
         }
 
         .stat-label {
@@ -123,7 +73,6 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
         }
 
         .nav-btn {
@@ -139,7 +88,6 @@
             cursor: pointer;
             flex: 1;
             text-align: center;
-            min-width: 120px;
         }
 
         .nav-btn:hover, .nav-btn.active {
@@ -163,16 +111,6 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideIn 0.5s ease forwards;
-        }
-
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .ticket:hover {
@@ -191,71 +129,49 @@
             border-radius: 20px 20px 0 0;
         }
 
-        .ticket.new {
-            border-color: rgba(76, 175, 80, 0.5);
-            box-shadow: 0 8px 32px rgba(76, 175, 80, 0.2);
-        }
-
         .ticket-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
         .ticket-info {
             flex: 1;
-            min-width: 200px;
         }
 
         .ticket-id {
-            font-size: 16px;
+            font-size: 14px;
             color: #fff;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            opacity: 0.7;
+            margin-bottom: 5px;
         }
 
         .ticket-category {
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 6px 14px;
+            padding: 5px 12px;
             font-size: 12px;
             display: inline-block;
             margin-bottom: 10px;
-            font-weight: 500;
         }
 
         .ticket-user {
             font-size: 14px;
-            opacity: 0.9;
+            opacity: 0.8;
             margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
 
         .ticket-time {
             font-size: 12px;
-            opacity: 0.7;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            opacity: 0.6;
         }
 
         .ticket-question {
             margin: 15px 0;
             line-height: 1.6;
             font-size: 15px;
-            background: rgba(0, 0, 0, 0.1);
-            padding: 12px;
-            border-radius: 10px;
-            border-left: 3px solid rgba(255, 255, 255, 0.3);
         }
 
         .ticket-photo {
@@ -264,15 +180,8 @@
 
         .ticket-photo img {
             max-width: 100%;
-            max-height: 200px;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .ticket-photo img:hover {
-            transform: scale(1.05);
         }
 
         .ticket-actions {
@@ -280,7 +189,6 @@
             gap: 8px;
             flex-wrap: wrap;
             margin-top: 15px;
-            justify-content: center;
         }
 
         .btn {
@@ -288,52 +196,31 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
-            padding: 10px 14px;
+            padding: 8px 12px;
             color: #fff;
             font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-weight: 500;
-            min-width: 90px;
-            justify-content: center;
+            gap: 5px;
         }
 
         .btn:hover {
             background: rgba(255, 255, 255, 0.25);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .btn:active {
-            transform: translateY(0);
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .btn-view { 
-            border-left: 3px solid #4ecdc4; 
-            background: rgba(78, 205, 196, 0.2);
-        }
-        .btn-view:hover { background: rgba(78, 205, 196, 0.3); }
-
-        .btn-reject { 
-            border-left: 3px solid #ff6b6b; 
-            background: rgba(255, 107, 107, 0.2);
-        }
-        .btn-reject:hover { background: rgba(255, 107, 107, 0.3); }
-
-        .btn-respond { 
-            border-left: 3px solid #45b7d1; 
-            background: rgba(69, 183, 209, 0.2);
-        }
-        .btn-respond:hover { background: rgba(69, 183, 209, 0.3); }
-
-        .btn-warn { 
-            border-left: 3px solid #ffa500; 
-            background: rgba(255, 165, 0, 0.2);
-        }
-        .btn-warn:hover { background: rgba(255, 165, 0, 0.3); }
+        .btn-view { border-left: 3px solid #4ecdc4; }
+        .btn-reject { border-left: 3px solid #ff6b6b; }
+        .btn-respond { border-left: 3px solid #45b7d1; }
+        .btn-warn { border-left: 3px solid #ffa500; }
 
         .modal {
             display: none;
@@ -342,15 +229,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
             z-index: 1000;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .modal-content {
@@ -367,20 +248,11 @@
             max-height: 80%;
             overflow-y: auto;
             color: #fff;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translate(-50%, -40%); opacity: 0; }
-            to { transform: translate(-50%, -50%); opacity: 1; }
         }
 
         .modal h3 {
             margin-bottom: 20px;
             font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .form-group {
@@ -402,7 +274,6 @@
             padding: 12px;
             color: #fff;
             font-size: 14px;
-            transition: all 0.3s ease;
         }
 
         .form-control::placeholder {
@@ -425,7 +296,6 @@
             gap: 10px;
             justify-content: flex-end;
             margin-top: 20px;
-            flex-wrap: wrap;
         }
 
         .btn-primary {
@@ -442,6 +312,12 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-secondary {
@@ -462,10 +338,6 @@
             max-height: 200px;
             overflow-y: auto;
             margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.1);
         }
 
         .template-item {
@@ -476,12 +348,10 @@
             margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 1px solid transparent;
         }
 
         .template-item:hover {
             background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .template-name {
@@ -492,7 +362,6 @@
         .template-text {
             font-size: 12px;
             opacity: 0.8;
-            line-height: 1.4;
         }
 
         .settings-section {
@@ -507,38 +376,6 @@
         .settings-section h3 {
             margin-bottom: 15px;
             font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .category-item, .template-item-settings {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .item-info {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .item-name {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .item-text {
-            font-size: 12px;
-            opacity: 0.8;
-            line-height: 1.4;
         }
 
         .banned-user {
@@ -555,21 +392,15 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
         .banned-user-info {
             flex: 1;
-            min-width: 200px;
         }
 
         .banned-username {
             font-weight: 500;
             margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
 
         .banned-date {
@@ -597,7 +428,6 @@
         .loading {
             text-align: center;
             padding: 20px;
-            transition: opacity 0.3s ease;
         }
 
         .spinner {
@@ -623,39 +453,30 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(76, 175, 80, 0.9);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            z-index: 2000;
-            animation: slideInRight 0.3s ease;
+            border-radius: 10px;
+            padding: 15px;
+            color: #fff;
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
             max-width: 300px;
         }
 
-        .notification.error {
-            background: rgba(244, 67, 54, 0.9);
+        .notification.success {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.2);
         }
 
-        @keyframes slideInRight {
+        .notification.error {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .last-updated {
-            font-size: 12px;
-            opacity: 0.7;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
 
         @media (max-width: 768px) {
@@ -664,7 +485,7 @@
             }
             
             .stats {
-                grid-template-columns: repeat(2, 1fr);
+                flex-direction: column;
                 gap: 10px;
             }
             
@@ -672,45 +493,13 @@
                 flex-direction: column;
             }
             
-            .ticket-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
             .ticket-actions {
                 justify-content: center;
-                gap: 6px;
-            }
-            
-            .btn {
-                min-width: 80px;
-                padding: 8px 10px;
-                font-size: 11px;
             }
             
             .modal-content {
                 padding: 20px;
                 max-width: 95%;
-            }
-            
-            .btn-group {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats {
-                grid-template-columns: 1fr;
-            }
-            
-            .ticket-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .btn {
-                justify-content: center;
-                min-width: auto;
             }
         }
     </style>
@@ -720,25 +509,17 @@
         <!-- Заголовок -->
         <div class="header">
             <h1>🛠️ Админ-панель поддержки</h1>
-            <div class="auto-refresh-indicator">
-                <div class="pulse"></div>
-                <span>Автообновление активно</span>
-            </div>
             <div class="stats">
                 <div class="stat-card">
-                    <div class="stat-number" id="pendingCount">0</div>
+                    <div class="stat-number" id="pendingCount">-</div>
                     <div class="stat-label">В ожидании</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="viewedCount">0</div>
+                    <div class="stat-number" id="viewedCount">-</div>
                     <div class="stat-label">Просмотрено</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="respondedCount">0</div>
-                    <div class="stat-label">Отвечено</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="bannedCount">0</div>
+                    <div class="stat-number" id="bannedCount">-</div>
                     <div class="stat-label">Заблокировано</div>
                 </div>
             </div>
@@ -753,13 +534,6 @@
 
         <!-- Секция тикетов -->
         <div id="ticketsSection" class="section">
-            <div class="section-header">
-                <h2 style="font-size: 18px; opacity: 0.9;">Активные тикеты</h2>
-                <div class="last-updated" id="ticketsLastUpdated">
-                    <span>🕒</span>
-                    <span>Обновлено: никогда</span>
-                </div>
-            </div>
             <div class="loading" id="ticketsLoading">
                 <div class="spinner"></div>
                 <div>Загрузка тикетов...</div>
@@ -769,13 +543,6 @@
 
         <!-- Секция заблокированных -->
         <div id="bannedSection" class="section hidden">
-            <div class="section-header">
-                <h2 style="font-size: 18px; opacity: 0.9;">Заблокированные пользователи</h2>
-                <div class="last-updated" id="bannedLastUpdated">
-                    <span>🕒</span>
-                    <span>Обновлено: никогда</span>
-                </div>
-            </div>
             <div class="loading" id="bannedLoading">
                 <div class="spinner"></div>
                 <div>Загрузка заблокированных пользователей...</div>
@@ -789,9 +556,9 @@
             <div class="settings-section">
                 <h3>💬 Приветственное сообщение</h3>
                 <div class="form-group">
-                    <textarea class="form-control" id="welcomeMessage" placeholder="Введите приветственное сообщение..." rows="4"></textarea>
+                    <textarea class="form-control" id="welcomeMessage" placeholder="Введите приветственное сообщение..."></textarea>
                 </div>
-                <button class="btn-primary" onclick="updateWelcomeMessage()">💾 Сохранить</button>
+                <button class="btn-primary" onclick="updateWelcomeMessage()">Сохранить</button>
             </div>
 
             <!-- Категории -->
@@ -801,7 +568,7 @@
                 <div class="form-group">
                     <input type="text" class="form-control" id="newCategoryName" placeholder="Название новой категории">
                 </div>
-                <button class="btn-primary" onclick="addCategory()">➕ Добавить категорию</button>
+                <button class="btn-primary" onclick="addCategory()">Добавить категорию</button>
             </div>
 
             <!-- Шаблоны сообщений -->
@@ -812,9 +579,9 @@
                     <input type="text" class="form-control" id="newTemplateName" placeholder="Название шаблона">
                 </div>
                 <div class="form-group">
-                    <textarea class="form-control" id="newTemplateText" placeholder="Текст шаблона" rows="3"></textarea>
+                    <textarea class="form-control" id="newTemplateText" placeholder="Текст шаблона"></textarea>
                 </div>
-                <button class="btn-primary" onclick="addTemplate()">➕ Добавить шаблон</button>
+                <button class="btn-primary" onclick="addTemplate()">Добавить шаблон</button>
             </div>
         </div>
     </div>
@@ -825,18 +592,18 @@
             <h3>💬 Ответить на тикет #<span id="responseTicketId"></span></h3>
             
             <div class="form-group">
-                <label>🔧 Выберите шаблон (необязательно):</label>
+                <label>Выберите шаблон (необязательно):</label>
                 <div class="template-list" id="responseTemplateList"></div>
             </div>
             
             <div class="form-group">
-                <label>✏️ Ваш ответ:</label>
-                <textarea class="form-control" id="responseText" placeholder="Введите ваш ответ..." rows="5"></textarea>
+                <label>Ваш ответ:</label>
+                <textarea class="form-control" id="responseText" placeholder="Введите ваш ответ..."></textarea>
             </div>
             
             <div class="btn-group">
-                <button class="btn-secondary" onclick="closeModal('responseModal')">❌ Отмена</button>
-                <button class="btn-primary" onclick="sendResponse()">📤 Отправить</button>
+                <button class="btn-secondary" onclick="closeModal('responseModal')">Отмена</button>
+                <button class="btn-primary" id="sendResponseBtn" onclick="sendResponse()">Отправить</button>
             </div>
         </div>
     </div>
@@ -848,22 +615,9 @@
             <p>Выберите действие для пользователя <strong id="warnUsername"></strong>:</p>
             
             <div class="btn-group">
-                <button class="btn-secondary" onclick="closeModal('warnModal')">❌ Отмена</button>
+                <button class="btn-secondary" onclick="closeModal('warnModal')">Отмена</button>
                 <button class="btn" onclick="warnUser()" style="background: rgba(255, 165, 0, 0.3); border-color: #ffa500;">⚠️ Предупредить</button>
                 <button class="btn" onclick="banUser()" style="background: rgba(255, 107, 107, 0.3); border-color: #ff6b6b;">🚫 Заблокировать</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальное окно просмотра фото -->
-    <div id="photoModal" class="modal">
-        <div class="modal-content" style="max-width: 80%; max-height: 90%;">
-            <h3>📷 Просмотр фото</h3>
-            <div style="text-align: center;">
-                <img id="modalPhoto" style="max-width: 100%; max-height: 70vh; border-radius: 10px;" alt="Фото">
-            </div>
-            <div class="btn-group">
-                <button class="btn-secondary" onclick="closeModal('photoModal')">❌ Закрыть</button>
             </div>
         </div>
     </div>
@@ -873,7 +627,7 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
-        tg.setHeaderColor('#667eea');
+        tg.disableVerticalSwipes();
 
         // Глобальные переменные
         let currentTickets = [];
@@ -882,172 +636,115 @@
         let currentCategories = [];
         let selectedTicket = null;
         let selectedUser = null;
-        let currentSection = 'tickets';
-        let lastTicketIds = new Set();
-        let autoRefreshInterval = null;
+        let isLoading = false;
+        let pendingRequests = new Map();
 
-        // Константы для автообновления
-        const AUTO_REFRESH_INTERVAL = 10000; // 10 секунд
-        const VISUAL_UPDATE_DELAY = 300; // Задержка для анимаций
-
-        // Функции уведомлений
-        function showNotification(message, isError = false) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${isError ? 'error' : ''}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 4000);
-        }
-
-        // Функция обновления времени последнего обновления
-        function updateLastUpdatedTime(sectionName) {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('ru-RU', { 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit' 
-            });
-            
-            const element = document.getElementById(`${sectionName}LastUpdated`);
-            if (element) {
-                element.innerHTML = `<span>🕒</span><span>Обновлено: ${timeString}</span>`;
-            }
-        }
-
-        // Функция анимации статистики при обновлении
-        function animateStatUpdate(elementId, newValue) {
-            const element = document.getElementById(elementId);
-            const card = element.closest('.stat-card');
-            
-            if (element.textContent !== newValue.toString()) {
-                card.classList.add('updated');
-                element.style.transform = 'scale(1.2)';
-                element.style.color = '#4ecdc4';
-                
-                setTimeout(() => {
-                    element.textContent = newValue;
-                    element.style.transform = 'scale(1)';
-                    element.style.color = '#fff';
-                    card.classList.remove('updated');
-                }, VISUAL_UPDATE_DELAY);
-            }
-        }
-
-        // Функция отправки команды боту
+        // Функция отправки команд боту
         function sendCommand(action, data = {}) {
-            const command = {
-                action: action,
-                ...data
-            };
-            
-            try {
-                tg.sendData(`/admin_${JSON.stringify(command)}`);
-                return true;
-            } catch (error) {
-                console.error('Ошибка отправки команды:', error);
-                showNotification('Ошибка отправки команды', true);
-                return false;
-            }
+            return new Promise((resolve, reject) => {
+                if (isLoading) {
+                    reject(new Error('Предыдущая команда ещё выполняется'));
+                    return;
+                }
+
+                const command = {
+                    action: action,
+                    ...data
+                };
+
+                const requestId = Date.now();
+                const commandString = `/webapp_${JSON.stringify(command)}`;
+
+                try {
+                    console.log('Отправка команды:', commandString);
+                    
+                    // Сохраняем запрос для обработки ответа
+                    pendingRequests.set(action, { resolve, reject, requestId });
+                    
+                    // Отправляем команду боту
+                    tg.sendData(commandString);
+                    
+                    // Устанавливаем таймаут
+                    setTimeout(() => {
+                        if (pendingRequests.has(action)) {
+                            pendingRequests.delete(action);
+                            reject(new Error('Таймаут выполнения команды'));
+                        }
+                    }, 10000);
+                    
+                } catch (error) {
+                    console.error('Ошибка отправки команды:', error);
+                    pendingRequests.delete(action);
+                    reject(error);
+                }
+            });
         }
 
-        // Функция получения данных от бота
-        function requestData(endpoint, params = {}) {
-            const request = {
-                endpoint: endpoint,
-                ...params
-            };
-            
+        // Функция загрузки данных из бота
+        async function loadDataFromBot(endpoint) {
             try {
-                tg.sendData(`/api_${JSON.stringify(request)}`);
-                return true;
+                isLoading = true;
+                const response = await sendCommand(endpoint);
+                return response || [];
             } catch (error) {
-                console.error('Ошибка запроса данных:', error);
-                showNotification('Ошибка загрузки данных', true);
-                return false;
+                console.error(`Ошибка загрузки ${endpoint}:`, error);
+                showNotification(`Ошибка загрузки данных: ${error.message}`, 'error');
+                return [];
+            } finally {
+                isLoading = false;
             }
         }
 
         // Загрузка данных
-        async function loadTickets(silent = false) {
-            if (!silent) {
-                document.getElementById('ticketsLoading').classList.remove('hidden');
-            }
+        async function loadTickets() {
+            document.getElementById('ticketsLoading').classList.remove('hidden');
             
-            requestData('get_tickets');
+            try {
+                const tickets = await loadDataFromBot('get_tickets');
+                currentTickets = tickets;
+                renderTickets();
+                updateStats();
+            } catch (error) {
+                console.error('Ошибка загрузки тикетов:', error);
+                showNotification('Ошибка загрузки тикетов', 'error');
+            } finally {
+                document.getElementById('ticketsLoading').classList.add('hidden');
+            }
         }
 
-        async function loadBannedUsers(silent = false) {
-            if (!silent) {
-                document.getElementById('bannedLoading').classList.remove('hidden');
-            }
+        async function loadBannedUsers() {
+            document.getElementById('bannedLoading').classList.remove('hidden');
             
-            requestData('get_banned_users');
+            try {
+                const bannedUsers = await loadDataFromBot('get_banned_users');
+                currentBannedUsers = bannedUsers;
+                renderBannedUsers();
+            } catch (error) {
+                console.error('Ошибка загрузки заблокированных:', error);
+                showNotification('Ошибка загрузки заблокированных пользователей', 'error');
+            } finally {
+                document.getElementById('bannedLoading').classList.add('hidden');
+            }
         }
 
         async function loadSettings() {
-            requestData('get_templates');
-            requestData('get_categories');
-            requestData('get_welcome');
-        }
-
-        async function updateStats() {
-            requestData('get_stats');
-        }
-
-        // Обработчик ответов от бота
-        tg.onEvent('mainButtonClicked', () => {
-            // Обработка нажатия основной кнопки
-        });
-
-        // Прослушиваем сообщения от бота
-        window.addEventListener('message', (event) => {
-            if (event.data && typeof event.data === 'string' && event.data.startsWith('/api_response_')) {
-                try {
-                    const responseData = JSON.parse(event.data.substring(14));
-                    handleApiResponse(responseData);
-                } catch (error) {
-                    console.error('Ошибка обработки ответа API:', error);
-                }
-            }
-        });
-
-        function handleApiResponse(data) {
-            if (data.tickets) {
-                currentTickets = data.tickets;
-                renderTickets();
-                document.getElementById('ticketsLoading').classList.add('hidden');
-                updateLastUpdatedTime('tickets');
-            }
-            
-            if (data.banned_users) {
-                currentBannedUsers = data.banned_users;
-                renderBannedUsers();
-                document.getElementById('bannedLoading').classList.add('hidden');
-                updateLastUpdatedTime('banned');
-            }
-            
-            if (data.templates) {
-                currentTemplates = data.templates;
+            try {
+                const [templates, categories, welcomeData] = await Promise.all([
+                    loadDataFromBot('get_templates'),
+                    loadDataFromBot('get_categories'),
+                    loadDataFromBot('get_welcome')
+                ]);
+                
+                currentTemplates = templates;
+                currentCategories = categories;
+                
                 renderTemplates();
-            }
-            
-            if (data.categories) {
-                currentCategories = data.categories;
                 renderCategories();
-            }
-            
-            if (data.welcome_message) {
-                document.getElementById('welcomeMessage').value = data.welcome_message;
-            }
-            
-            if (data.stats) {
-                animateStatUpdate('pendingCount', data.stats.pending || 0);
-                animateStatUpdate('viewedCount', data.stats.viewed || 0);
-                animateStatUpdate('respondedCount', data.stats.responded || 0);
-                animateStatUpdate('bannedCount', data.stats.banned_users || 0);
+                
+                document.getElementById('welcomeMessage').value = welcomeData?.message || '';
+            } catch (error) {
+                console.error('Ошибка загрузки настроек:', error);
+                showNotification('Ошибка загрузки настроек', 'error');
             }
         }
 
@@ -1055,39 +752,34 @@
         function renderTickets() {
             const container = document.getElementById('ticketsContainer');
             
-            if (currentTickets.length === 0) {
+            if (!Array.isArray(currentTickets) || currentTickets.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
                         <div>Нет новых тикетов</div>
-                        <div style="margin-top: 10px; opacity: 0.7; font-size: 14px;">Все обращения обработаны</div>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = currentTickets.map((ticket, index) => `
-                <div class="ticket" 
-                     data-ticket-id="${ticket.id}" 
-                     style="animation-delay: ${index * 0.1}s">
+            container.innerHTML = currentTickets.map(ticket => `
+                <div class="ticket" data-ticket-id="${ticket.id}">
                     <div class="ticket-header">
                         <div class="ticket-info">
-                            <div class="ticket-id">
-                                🎫 Тикет #${ticket.id}
-                            </div>
+                            <div class="ticket-id">Тикет #${ticket.id}</div>
                             <div class="ticket-category">${ticket.category_name}</div>
                             <div class="ticket-user">👤 ${ticket.username}</div>
                             <div class="ticket-time">🕐 ${formatDate(ticket.created_at)}</div>
                         </div>
                     </div>
                     <div class="ticket-question">
-                        ${ticket.question}
+                        ${escapeHtml(ticket.question)}
                     </div>
                     ${ticket.photo_id ? `
                         <div class="ticket-photo">
-                            <img src="https://api.telegram.org/file/bot${tg.initData}/photos/${ticket.photo_id}" 
-                                 alt="Прикрепленное фото" 
-                                 onclick="showPhoto('https://api.telegram.org/file/bot${tg.initData}/photos/${ticket.photo_id}')">
+                            <div style="padding: 20px; text-align: center; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 10px 0;">
+                                📷 Прикреплено фото
+                            </div>
                         </div>
                     ` : ''}
                     <div class="ticket-actions">
@@ -1111,12 +803,11 @@
         function renderBannedUsers() {
             const container = document.getElementById('bannedContainer');
             
-            if (currentBannedUsers.length === 0) {
+            if (!Array.isArray(currentBannedUsers) || currentBannedUsers.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">✅</div>
                         <div>Нет заблокированных пользователей</div>
-                        <div style="margin-top: 10px; opacity: 0.7; font-size: 14px;">Все пользователи соблюдают правила</div>
                     </div>
                 `;
                 return;
@@ -1126,7 +817,7 @@
                 <div class="banned-user">
                     <div class="banned-user-header">
                         <div class="banned-user-info">
-                            <div class="banned-username">👤 ${user.username} (ID: ${user.user_id})</div>
+                            <div class="banned-username">👤 ${user.username}</div>
                             <div class="banned-date">🚫 Заблокирован: ${formatDate(user.banned_at)}</div>
                         </div>
                         <button class="btn btn-primary" onclick="unbanUser(${user.user_id})">
@@ -1135,11 +826,11 @@
                     </div>
                     ${user.last_question ? `
                         <div class="banned-ticket-info">
-                            <div style="margin-bottom: 8px;"><strong>📂 Категория:</strong> ${user.category_name}</div>
-                            <div style="margin-bottom: 8px;"><strong>💬 Последнее сообщение:</strong></div>
-                            <div style="font-style: italic; opacity: 0.9; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 8px;">${user.last_question}</div>
-                            <div style="font-size: 12px; opacity: 0.7;">
-                                📅 Отправлено: ${formatDate(user.ticket_created_at)}
+                            <div style="margin-bottom: 5px;"><strong>Категория:</strong> ${user.category_name || 'Не указана'}</div>
+                            <div style="margin-bottom: 5px;"><strong>Последнее сообщение:</strong></div>
+                            <div style="font-style: italic; opacity: 0.8;">${escapeHtml(user.last_question)}</div>
+                            <div style="margin-top: 5px; font-size: 12px; opacity: 0.6;">
+                                📅 ${formatDate(user.ticket_created_at)}
                             </div>
                         </div>
                     ` : ''}
@@ -1149,13 +840,17 @@
 
         function renderTemplates() {
             const container = document.getElementById('templatesList');
+            
+            if (!Array.isArray(currentTemplates)) {
+                container.innerHTML = '<div>Ошибка загрузки шаблонов</div>';
+                return;
+            }
+
             container.innerHTML = currentTemplates.map(template => `
-                <div class="template-item-settings">
-                    <div class="item-info">
-                        <div class="item-name">${template.name}</div>
-                        <div class="item-text">${template.text}</div>
-                    </div>
-                    <button class="btn" onclick="deleteTemplate(${template.id})" style="background: rgba(255, 107, 107, 0.3); border-color: #ff6b6b;">
+                <div class="template-item">
+                    <div class="template-name">${escapeHtml(template.name)}</div>
+                    <div class="template-text">${escapeHtml(template.text)}</div>
+                    <button class="btn" onclick="deleteTemplate(${template.id})" style="margin-top: 10px; background: rgba(255, 107, 107, 0.2);">
                         🗑️ Удалить
                     </button>
                 </div>
@@ -1164,21 +859,25 @@
             // Обновляем список в модальном окне
             const modalList = document.getElementById('responseTemplateList');
             modalList.innerHTML = currentTemplates.map(template => `
-                <div class="template-item" onclick="selectTemplate('${template.text.replace(/'/g, "\\'")}')">
-                    <div class="template-name">${template.name}</div>
-                    <div class="template-text">${template.text}</div>
+                <div class="template-item" onclick="selectTemplate('${escapeHtml(template.text).replace(/'/g, "\\'")}')">
+                    <div class="template-name">${escapeHtml(template.name)}</div>
+                    <div class="template-text">${escapeHtml(template.text)}</div>
                 </div>
             `).join('');
         }
 
         function renderCategories() {
             const container = document.getElementById('categoriesList');
+            
+            if (!Array.isArray(currentCategories)) {
+                container.innerHTML = '<div>Ошибка загрузки категорий</div>';
+                return;
+            }
+
             container.innerHTML = currentCategories.map(category => `
-                <div class="category-item">
-                    <div class="item-info">
-                        <div class="item-name">${category.name}</div>
-                    </div>
-                    <button class="btn" onclick="deleteCategory(${category.id})" style="background: rgba(255, 107, 107, 0.3); border-color: #ff6b6b;">
+                <div class="template-item">
+                    <div class="template-name">${escapeHtml(category.name)}</div>
+                    <button class="btn" onclick="deleteCategory(${category.id})" style="margin-top: 10px; background: rgba(255, 107, 107, 0.2);">
                         🗑️ Удалить
                     </button>
                 </div>
@@ -1186,64 +885,66 @@
         }
 
         // Вспомогательные функции
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMins / 60);
-            const diffDays = Math.floor(diffHours / 24);
-
-            if (diffMins < 1) {
-                return 'только что';
-            } else if (diffMins < 60) {
-                return `${diffMins} мин назад`;
-            } else if (diffHours < 24) {
-                return `${diffHours} ч назад`;
-            } else if (diffDays < 7) {
-                return `${diffDays} дн назад`;
-            } else {
-                return date.toLocaleDateString('ru-RU', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
-        }
-
-        function showPhoto(photoUrl) {
-            document.getElementById('modalPhoto').src = photoUrl;
-            document.getElementById('photoModal').style.display = 'block';
-        }
-
-        // Автообновление данных
-        function startAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-            }
+            if (!dateString) return 'Не указано';
             
-            autoRefreshInterval = setInterval(async () => {
-                if (!document.querySelector('.modal[style*="block"]')) {
-                    switch (currentSection) {
-                        case 'tickets':
-                            await loadTickets(true);
-                            await updateStats();
-                            break;
-                        case 'banned':
-                            await loadBannedUsers(true);
-                            break;
-                    }
+            try {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMins / 60);
+                const diffDays = Math.floor(diffHours / 24);
+
+                if (diffMins < 1) {
+                    return 'Только что';
+                } else if (diffMins < 60) {
+                    return `${diffMins} мин назад`;
+                } else if (diffHours < 24) {
+                    return `${diffHours} ч назад`;
+                } else if (diffDays < 7) {
+                    return `${diffDays} дн назад`;
+                } else {
+                    return date.toLocaleDateString('ru-RU');
                 }
-            }, AUTO_REFRESH_INTERVAL);
+            } catch (error) {
+                return dateString;
+            }
         }
 
-        function stopAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-            }
+        function updateStats() {
+            const pendingCount = Array.isArray(currentTickets) ? 
+                currentTickets.filter(t => t.status === 'pending').length : 0;
+            const viewedCount = Array.isArray(currentTickets) ? 
+                currentTickets.filter(t => t.status === 'viewed').length : 0;
+            const bannedCount = Array.isArray(currentBannedUsers) ? 
+                currentBannedUsers.length : 0;
+
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('viewedCount').textContent = viewedCount;
+            document.getElementById('bannedCount').textContent = bannedCount;
+        }
+
+        function showNotification(message, type = 'info') {
+            // Удаляем существующие уведомления
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
         }
 
         // Навигация
@@ -1261,17 +962,11 @@
             // Показываем нужную секцию
             document.getElementById(sectionName + 'Section').classList.remove('hidden');
             event.target.classList.add('active');
-            currentSection = sectionName;
 
             // Загружаем данные для секции
-            loadSectionData(sectionName);
-        }
-
-        function loadSectionData(sectionName) {
             switch (sectionName) {
                 case 'tickets':
                     loadTickets();
-                    updateStats();
                     break;
                 case 'banned':
                     loadBannedUsers();
@@ -1284,29 +979,35 @@
 
         // Действия с тикетами
         async function viewTicket(ticketId) {
-            const success = sendCommand('view_ticket', { ticket_id: ticketId });
-            if (success) {
-                showNotification('Тикет отмечен как просмотренный');
-                // Обновляем данные через небольшую задержку
-                setTimeout(() => {
-                    loadTickets(true);
+            try {
+                await sendCommand('view_ticket', { ticket_id: ticketId });
+                
+                // Обновляем статус тикета локально
+                const ticket = currentTickets.find(t => t.id === ticketId);
+                if (ticket) {
+                    ticket.status = 'viewed';
+                    renderTickets();
                     updateStats();
-                }, 1000);
+                }
+                
+                showNotification('Тикет отмечен как просмотренный', 'success');
+            } catch (error) {
+                showNotification('Ошибка при просмотре тикета', 'error');
             }
         }
 
         async function rejectTicket(ticketId) {
-            if (!confirm('Вы уверены, что хотите отклонить этот тикет?')) {
-                return;
-            }
-
-            const success = sendCommand('reject_ticket', { ticket_id: ticketId });
-            if (success) {
-                showNotification('Тикет отклонен');
-                setTimeout(() => {
-                    loadTickets(true);
-                    updateStats();
-                }, 1000);
+            try {
+                await sendCommand('reject_ticket', { ticket_id: ticketId });
+                
+                // Удаляем тикет из списка
+                currentTickets = currentTickets.filter(t => t.id !== ticketId);
+                renderTickets();
+                updateStats();
+                
+                showNotification('Тикет отклонен', 'success');
+            } catch (error) {
+                showNotification('Ошибка при отклонении тикета', 'error');
             }
         }
 
@@ -1348,99 +1049,98 @@
         async function sendResponse() {
             const responseText = document.getElementById('responseText').value.trim();
             if (!responseText) {
-                showNotification('Введите текст ответа', true);
+                showNotification('Введите текст ответа', 'error');
                 return;
             }
 
             if (!selectedTicket) return;
 
-            const success = sendCommand('respond_ticket', {
-                ticket_id: selectedTicket.id,
-                response: responseText
-            });
+            const sendBtn = document.getElementById('sendResponseBtn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Отправка...';
 
-            if (success) {
+            try {
+                await sendCommand('respond_ticket', {
+                    ticket_id: selectedTicket.id,
+                    response: responseText
+                });
+
+                // Удаляем тикет из списка
+                currentTickets = currentTickets.filter(t => t.id !== selectedTicket.id);
+                renderTickets();
+                updateStats();
+                
                 closeModal('responseModal');
-                showNotification('Ответ отправлен пользователю');
-                
-                // Добавляем вибрацию если поддерживается
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.notificationOccurred('success');
-                }
-                
-                setTimeout(() => {
-                    loadTickets(true);
-                    updateStats();
-                }, 1000);
+                showNotification('Ответ отправлен', 'success');
+            } catch (error) {
+                showNotification('Ошибка при отправке ответа', 'error');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Отправить';
             }
         }
 
         async function warnUser() {
             if (!selectedUser) return;
 
-            const success = sendCommand('warn_user', {
-                user_id: selectedUser.user_id
-            });
+            try {
+                await sendCommand('warn_user', {
+                    user_id: selectedUser.user_id
+                });
 
-            if (success) {
                 closeModal('warnModal');
-                showNotification('Предупреждение отправлено пользователю');
-                
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.notificationOccurred('warning');
-                }
+                showNotification('Предупреждение отправлено', 'success');
+            } catch (error) {
+                showNotification('Ошибка при отправке предупреждения', 'error');
             }
         }
 
         async function banUser() {
             if (!selectedUser) return;
 
-            if (!confirm(`Вы уверены, что хотите заблокировать пользователя ${selectedUser.username}?`)) {
-                return;
-            }
+            try {
+                await sendCommand('ban_user', {
+                    user_id: selectedUser.user_id,
+                    ticket_id: selectedUser.ticket_id
+                });
 
-            const success = sendCommand('ban_user', {
-                user_id: selectedUser.user_id,
-                ticket_id: selectedUser.ticket_id
-            });
-
-            if (success) {
-                closeModal('warnModal');
-                showNotification('Пользователь заблокирован');
-                
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.notificationOccurred('error');
+                // Добавляем пользователя в список заблокированных
+                const ticket = currentTickets.find(t => t.id === selectedUser.ticket_id);
+                if (ticket) {
+                    currentBannedUsers.unshift({
+                        user_id: selectedUser.user_id,
+                        username: selectedUser.username,
+                        banned_at: new Date().toISOString(),
+                        category_name: ticket.category_name,
+                        last_question: ticket.question,
+                        ticket_created_at: ticket.created_at
+                    });
                 }
+
+                // Удаляем тикет из списка
+                currentTickets = currentTickets.filter(t => t.id !== selectedUser.ticket_id);
+                renderTickets();
+                updateStats();
                 
-                setTimeout(() => {
-                    loadTickets(true);
-                    loadBannedUsers(true);
-                    updateStats();
-                }, 1000);
+                closeModal('warnModal');
+                showNotification('Пользователь заблокирован', 'success');
+            } catch (error) {
+                showNotification('Ошибка при блокировке пользователя', 'error');
             }
         }
 
         async function unbanUser(userId) {
-            const user = currentBannedUsers.find(u => u.user_id === userId);
-            if (!user) return;
-
-            if (!confirm(`Разблокировать пользователя ${user.username}?`)) {
-                return;
-            }
-
-            const success = sendCommand('unban_user', { user_id: userId });
-            
-            if (success) {
-                showNotification('Пользователь разблокирован');
+            try {
+                await sendCommand('unban_user', { user_id: userId });
                 
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.notificationOccurred('success');
-                }
+                // Удаляем пользователя из списка заблокированных
+                currentBannedUsers = currentBannedUsers.filter(u => u.user_id !== userId);
+                renderBannedUsers();
+                updateStats();
                 
-                setTimeout(() => {
-                    loadBannedUsers(true);
-                    updateStats();
-                }, 1000);
+                showNotification('Пользователь разблокирован', 'success');
+            } catch (error) {
+                showNotification('Ошибка при разблокировке пользователя', 'error');
             }
         }
 
@@ -1448,48 +1148,47 @@
         async function updateWelcomeMessage() {
             const message = document.getElementById('welcomeMessage').value.trim();
             if (!message) {
-                showNotification('Введите приветственное сообщение', true);
+                showNotification('Введите приветственное сообщение', 'error');
                 return;
             }
 
-            const success = sendCommand('update_welcome', { message: message });
-            if (success) {
-                showNotification('Приветственное сообщение обновлено');
+            try {
+                await sendCommand('update_welcome', { message: message });
+                showNotification('Приветственное сообщение обновлено', 'success');
+            } catch (error) {
+                showNotification('Ошибка при обновлении приветствия', 'error');
             }
         }
 
         async function addCategory() {
             const name = document.getElementById('newCategoryName').value.trim();
             if (!name) {
-                showNotification('Введите название категории', true);
+                showNotification('Введите название категории', 'error');
                 return;
             }
 
-            const success = sendCommand('add_category', { name: name });
-            if (success) {
-                document.getElementById('newCategoryName').value = '';
-                showNotification('Категория добавлена');
+            try {
+                await sendCommand('add_category', { name: name });
                 
-                setTimeout(() => {
-                    requestData('get_categories');
-                }, 500);
+                // Перезагружаем категории
+                await loadSettings();
+                document.getElementById('newCategoryName').value = '';
+                
+                showNotification('Категория добавлена', 'success');
+            } catch (error) {
+                showNotification('Ошибка при добавлении категории', 'error');
             }
         }
 
         async function deleteCategory(categoryId) {
-            const category = currentCategories.find(c => c.id === categoryId);
-            if (!category) return;
-
-            if (!confirm(`Удалить категорию "${category.name}"?`)) {
-                return;
-            }
-
-            const success = sendCommand('delete_category', { category_id: categoryId });
-            if (success) {
-                showNotification('Категория удалена');
-                setTimeout(() => {
-                    requestData('get_categories');
-                }, 500);
+            try {
+                await sendCommand('delete_category', { category_id: categoryId });
+                
+                // Перезагружаем категории
+                await loadSettings();
+                showNotification('Категория удалена', 'success');
+            } catch (error) {
+                showNotification('Ошибка при удалении категории', 'error');
             }
         }
 
@@ -1498,40 +1197,49 @@
             const text = document.getElementById('newTemplateText').value.trim();
             
             if (!name || !text) {
-                showNotification('Заполните все поля', true);
+                showNotification('Заполните все поля', 'error');
                 return;
             }
 
-            const success = sendCommand('add_template', { name: name, text: text });
-            if (success) {
+            try {
+                await sendCommand('add_template', { name: name, text: text });
+                
+                // Перезагружаем шаблоны
+                await loadSettings();
+                
                 document.getElementById('newTemplateName').value = '';
                 document.getElementById('newTemplateText').value = '';
-                showNotification('Шаблон добавлен');
                 
-                setTimeout(() => {
-                    requestData('get_templates');
-                }, 500);
+                showNotification('Шаблон добавлен', 'success');
+            } catch (error) {
+                showNotification('Ошибка при добавлении шаблона', 'error');
             }
         }
 
         async function deleteTemplate(templateId) {
-            const template = currentTemplates.find(t => t.id === templateId);
-            if (!template) return;
-
-            if (!confirm(`Удалить шаблон "${template.name}"?`)) {
-                return;
-            }
-
-            const success = sendCommand('delete_template', { template_id: templateId });
-            if (success) {
-                showNotification('Шаблон удален');
-                setTimeout(() => {
-                    requestData('get_templates');
-                }, 500);
+            try {
+                await sendCommand('delete_template', { template_id: templateId });
+                
+                // Перезагружаем шаблоны
+                await loadSettings();
+                showNotification('Шаблон удален', 'success');
+            } catch (error) {
+                showNotification('Ошибка при удалении шаблона', 'error');
             }
         }
 
-        // Обработчики событий
+        // Обработка ответов от бота
+        function handleBotResponse(data) {
+            console.log('Получен ответ от бота:', data);
+            
+            if (pendingRequests.has(data.action)) {
+                const request = pendingRequests.get(data.action);
+                pendingRequests.delete(data.action);
+                request.resolve(data.data);
+            }
+        }
+
+        // Закрытие модальных окон по клику вне них
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 e.target.style.display = 'none';
@@ -1540,83 +1248,46 @@
             }
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const openModal = document.querySelector('.modal[style*="block"]');
-                if (openModal) {
-                    openModal.style.display = 'none';
-                    selectedTicket = null;
-                    selectedUser = null;
-                }
-            }
-        });
-
-        // Обработка потери/восстановления фокуса для оптимизации
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                startAutoRefresh();
-                loadSectionData(currentSection);
-            } else {
-                stopAutoRefresh();
-            }
-        });
-
         // Обработка событий от Telegram WebApp
+        tg.onEvent('mainButtonClicked', () => {
+            // Обработка нажатия основной кнопки
+        });
+
         tg.onEvent('backButtonClicked', () => {
+            // Обработка нажатия кнопки назад
             tg.close();
         });
 
-        tg.onEvent('themeChanged', () => {
-            if (tg.colorScheme === 'dark') {
-                document.body.style.background = 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)';
-            } else {
-                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        // Слушаем сообщения от бота (если они приходят через postMessage)
+        window.addEventListener('message', (event) => {
+            if (typeof event.data === 'string' && event.data.startsWith('/webapp_response_')) {
+                try {
+                    const responseData = JSON.parse(event.data.replace('/webapp_response_', ''));
+                    handleBotResponse(responseData);
+                } catch (error) {
+                    console.error('Ошибка парсинга ответа от бота:', error);
+                }
             }
         });
 
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', () => {
-            // Устанавливаем тему для Telegram WebApp
-            if (tg.colorScheme === 'dark') {
-                document.body.style.background = 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)';
-            }
-
-            // Загружаем начальные данные
+            console.log('Приложение загружено');
             loadTickets();
-            updateStats();
-            
-            // Запускаем автообновление
-            startAutoRefresh();
-            
-            // Показываем уведомление о готовности
-            setTimeout(() => {
-                showNotification('🚀 Админ-панель загружена и готова к работе!');
-            }, 1500);
         });
 
-        // Обработка закрытия приложения
-        window.addEventListener('beforeunload', () => {
-            stopAutoRefresh();
-        });
-
-        // Обработка ошибок
-        window.addEventListener('error', (e) => {
-            console.error('Глобальная ошибка:', e.error);
-            showNotification('Произошла ошибка в приложении', true);
-        });
-
-        // Показ статуса подключения
-        window.addEventListener('online', () => {
-            showNotification('Подключение восстановлено');
-            loadSectionData(currentSection);
-        });
-
-        window.addEventListener('offline', () => {
-            showNotification('Нет подключения к интернету', true);
-            stopAutoRefresh();
-        });
-
-        console.log('🚀 Админ-панель инициализирована');
+        // Периодическое обновление данных
+        setInterval(() => {
+            if (!document.querySelector('.modal[style*="block"]') && !isLoading) {
+                // Обновляем данные только если нет открытых модальных окон
+                const activeSection = document.querySelector('.nav-btn.active');
+                if (activeSection && activeSection.textContent.includes('Тикеты')) {
+                    loadTickets();
+                } else if (activeSection && activeSection.textContent.includes('Заблокированные')) {
+                    loadBannedUsers();
+                }
+            }
+        }, 30000); // Обновление каждые 30 секунд
     </script>
 </body>
 </html>
