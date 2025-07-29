@@ -932,20 +932,60 @@
             document.getElementById(sectionName + 'Section').classList.remove('hidden');
             event.target.classList.add('active');
 
-            // Обновляем данные для секции
+            // Загружаем данные для секции
             switch (sectionName) {
                 case 'tickets':
-                    renderTickets();
-                    updateStats();
+                    loadTickets();
                     break;
                 case 'banned':
-                    renderBannedUsers();
+                    loadBannedUsers();
                     break;
                 case 'settings':
-                    renderTemplates();
-                    renderCategories();
-                    document.getElementById('welcomeMessage').value = cachedData.welcome_message;
+                    loadSettings();
                     break;
+            }
+        }
+
+        // Загрузка данных
+        async function loadTickets() {
+            document.getElementById('ticketsLoading').classList.remove('hidden');
+            
+            try {
+                // Используем кэшированные данные
+                renderTickets();
+                updateStats();
+            } catch (error) {
+                console.error('Ошибка загрузки тикетов:', error);
+                showNotification('Ошибка загрузки тикетов', 'error');
+            } finally {
+                document.getElementById('ticketsLoading').classList.add('hidden');
+            }
+        }
+
+        async function loadBannedUsers() {
+            document.getElementById('bannedLoading').classList.remove('hidden');
+            
+            try {
+                // Используем кэшированные данные
+                renderBannedUsers();
+            } catch (error) {
+                console.error('Ошибка загрузки заблокированных:', error);
+                showNotification('Ошибка загрузки заблокированных пользователей', 'error');
+            } finally {
+                document.getElementById('bannedLoading').classList.add('hidden');
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                // Используем кэшированные данные
+                renderTemplates();
+                renderCategories();
+                
+                document.getElementById('welcomeMessage').value = cachedData.welcome_message || '';
+            } catch (error) {
+                console.error('Ошибка загрузки настроек:', error);
+                showNotification('Ошибка загрузки настроек', 'error');
             }
         }
 
@@ -992,9 +1032,6 @@
             document.getElementById('responseTicketId').textContent = ticketId;
             document.getElementById('responseText').value = '';
             document.getElementById('responseModal').style.display = 'block';
-            
-            // Обновляем список шаблонов в модальном окне
-            renderTemplates();
         }
 
         function openWarnModal(ticketId) {
@@ -1152,6 +1189,7 @@
                     name: name
                 };
                 currentCategories.push(newCategory);
+                cachedData.categories.push(newCategory);
                 
                 renderCategories();
                 document.getElementById('newCategoryName').value = '';
@@ -1168,8 +1206,9 @@
                 
                 // Удаляем категорию локально
                 currentCategories = currentCategories.filter(c => c.id !== categoryId);
-                renderCategories();
+                cachedData.categories = cachedData.categories.filter(c => c.id !== categoryId);
                 
+                renderCategories();
                 showNotification('Категория удалена', 'success');
             } catch (error) {
                 showNotification('Ошибка при удалении категории', 'error');
@@ -1195,6 +1234,7 @@
                     text: text
                 };
                 currentTemplates.push(newTemplate);
+                cachedData.templates.push(newTemplate);
                 
                 renderTemplates();
                 
@@ -1213,8 +1253,9 @@
                 
                 // Удаляем шаблон локально
                 currentTemplates = currentTemplates.filter(t => t.id !== templateId);
-                renderTemplates();
+                cachedData.templates = cachedData.templates.filter(t => t.id !== templateId);
                 
+                renderTemplates();
                 showNotification('Шаблон удален', 'success');
             } catch (error) {
                 showNotification('Ошибка при удалении шаблона', 'error');
@@ -1247,38 +1288,27 @@
             // Инициализируем данные
             const hasInitialData = initializeData();
             
-            // Скрываем загрузку
-            document.getElementById('ticketsLoading').classList.add('hidden');
-            document.getElementById('bannedLoading').classList.add('hidden');
-            
             // Отображаем данные
             renderTickets();
             updateStats();
             
             if (hasInitialData) {
-                showNotification('Данные загружены', 'success');
+                showNotification('Данные загружены успешно', 'success');
             } else {
                 showNotification('Панель готова к работе', 'success');
             }
         });
 
-        // Периодическое обновление данных (только если нет открытых модальных окон)
+        // Обновление данных каждые 30 секунд (только для активной секции тикетов)
         setInterval(() => {
             if (!document.querySelector('.modal[style*="block"]') && !isLoading) {
                 const activeSection = document.querySelector('.nav-btn.active');
                 if (activeSection && activeSection.textContent.includes('Тикеты')) {
-                    // Можно добавить периодическое обновление тикетов
-                    // sendCommand('get_tickets').then(...).catch(...)
+                    // Здесь можно добавить логику обновления данных
+                    console.log('Автообновление данных...');
                 }
             }
         }, 30000);
-
-        // Показываем уведомление о готовности
-        setTimeout(() => {
-            if (currentTickets.length > 0) {
-                showNotification(`Загружено ${currentTickets.length} тикетов`, 'success');
-            }
-        }, 1500);
     </script>
 </body>
 </html>
