@@ -637,7 +637,6 @@
         let selectedTicket = null;
         let selectedUser = null;
         let isLoading = false;
-        let pendingRequests = new Map();
 
         // Функция отправки команд боту через WebApp
         function sendCommand(action, data = {}) {
@@ -662,7 +661,7 @@
                     // Для команд, которые не требуют ответа, сразу резолвим
                     setTimeout(() => {
                         resolve({ success: true });
-                    }, 500);
+                    }, 1000);
                     
                 } catch (error) {
                     console.error('Ошибка отправки команды:', error);
@@ -671,26 +670,7 @@
             });
         }
 
-        // Функция загрузки данных - используем кэшированные данные
-        async function loadDataFromBot(endpoint) {
-            try {
-                isLoading = true;
-                
-                // Для демонстрации используем сохраненные данные
-                // В реальном приложении данные будут приходить при инициализации
-                const data = getCachedData(endpoint);
-                return data || [];
-                
-            } catch (error) {
-                console.error(`Ошибка загрузки ${endpoint}:`, error);
-                showNotification(`Ошибка загрузки данных: ${error.message}`, 'error');
-                return [];
-            } finally {
-                isLoading = false;
-            }
-        }
-
-        // Кэшированные данные (в реальном приложении будут приходить от бота)
+        // Кэшированные данные (инициализируются при загрузке)
         let cachedData = {
             tickets: [],
             banned_users: [],
@@ -699,26 +679,8 @@
             welcome_message: ''
         };
 
-        function getCachedData(endpoint) {
-            switch (endpoint) {
-                case 'get_tickets':
-                    return cachedData.tickets;
-                case 'get_banned_users':
-                    return cachedData.banned_users;
-                case 'get_categories':
-                    return cachedData.categories;
-                case 'get_templates':
-                    return cachedData.templates;
-                case 'get_welcome':
-                    return { message: cachedData.welcome_message };
-                default:
-                    return [];
-            }
-        }
-
         // Инициализация данных от бота (вызывается при загрузке приложения)
         function initializeData() {
-            // Пытаемся получить данные из URL параметров
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const dataParam = urlParams.get('data');
@@ -750,73 +712,9 @@
                 console.error('Ошибка инициализации данных из URL:', error);
             }
             
-            // Если не удалось получить данные из URL, запрашиваем их
-            const initCommands = [
-                'get_tickets',
-                'get_banned_users', 
-                'get_categories',
-                'get_templates',
-                'get_welcome'
-            ];
-
-            initCommands.forEach(command => {
-                sendCommand(command).catch(console.error);
-            });
-            
+            // Если не удалось получить данные из URL, используем пустые данные
+            console.log('Используются пустые данные');
             return false;
-        }
-
-        // Загрузка данных
-        async function loadTickets() {
-            document.getElementById('ticketsLoading').classList.remove('hidden');
-            
-            try {
-                const tickets = await loadDataFromBot('get_tickets');
-                currentTickets = tickets;
-                renderTickets();
-                updateStats();
-            } catch (error) {
-                console.error('Ошибка загрузки тикетов:', error);
-                showNotification('Ошибка загрузки тикетов', 'error');
-            } finally {
-                document.getElementById('ticketsLoading').classList.add('hidden');
-            }
-        }
-
-        async function loadBannedUsers() {
-            document.getElementById('bannedLoading').classList.remove('hidden');
-            
-            try {
-                const bannedUsers = await loadDataFromBot('get_banned_users');
-                currentBannedUsers = bannedUsers;
-                renderBannedUsers();
-            } catch (error) {
-                console.error('Ошибка загрузки заблокированных:', error);
-                showNotification('Ошибка загрузки заблокированных пользователей', 'error');
-            } finally {
-                document.getElementById('bannedLoading').classList.add('hidden');
-            }
-        }
-
-        async function loadSettings() {
-            try {
-                const [templates, categories, welcomeData] = await Promise.all([
-                    loadDataFromBot('get_templates'),
-                    loadDataFromBot('get_categories'),
-                    loadDataFromBot('get_welcome')
-                ]);
-                
-                currentTemplates = templates;
-                currentCategories = categories;
-                
-                renderTemplates();
-                renderCategories();
-                
-                document.getElementById('welcomeMessage').value = welcomeData?.message || '';
-            } catch (error) {
-                console.error('Ошибка загрузки настроек:', error);
-                showNotification('Ошибка загрузки настроек', 'error');
-            }
         }
 
         // Отрисовка интерфейса
@@ -1034,16 +932,19 @@
             document.getElementById(sectionName + 'Section').classList.remove('hidden');
             event.target.classList.add('active');
 
-            // Загружаем данные для секции
+            // Обновляем данные для секции
             switch (sectionName) {
                 case 'tickets':
-                    loadTickets();
+                    renderTickets();
+                    updateStats();
                     break;
                 case 'banned':
-                    loadBannedUsers();
+                    renderBannedUsers();
                     break;
                 case 'settings':
-                    loadSettings();
+                    renderTemplates();
+                    renderCategories();
+                    document.getElementById('welcomeMessage').value = cachedData.welcome_message;
                     break;
             }
         }
@@ -1091,6 +992,9 @@
             document.getElementById('responseTicketId').textContent = ticketId;
             document.getElementById('responseText').value = '';
             document.getElementById('responseModal').style.display = 'block';
+            
+            // Обновляем список шаблонов в модальном окне
+            renderTemplates();
         }
 
         function openWarnModal(ticketId) {
@@ -1225,6 +1129,7 @@
 
             try {
                 await sendCommand('update_welcome', { message: message });
+                cachedData.welcome_message = message;
                 showNotification('Приветственное сообщение обновлено', 'success');
             } catch (error) {
                 showNotification('Ошибка при обновлении приветствия', 'error');
@@ -1241,8 +1146,14 @@
             try {
                 await sendCommand('add_category', { name: name });
                 
-                // Перезагружаем категории
-                await loadSettings();
+                // Добавляем категорию локально
+                const newCategory = {
+                    id: Date.now(), // Временный ID
+                    name: name
+                };
+                currentCategories.push(newCategory);
+                
+                renderCategories();
                 document.getElementById('newCategoryName').value = '';
                 
                 showNotification('Категория добавлена', 'success');
@@ -1255,8 +1166,10 @@
             try {
                 await sendCommand('delete_category', { category_id: categoryId });
                 
-                // Перезагружаем категории
-                await loadSettings();
+                // Удаляем категорию локально
+                currentCategories = currentCategories.filter(c => c.id !== categoryId);
+                renderCategories();
+                
                 showNotification('Категория удалена', 'success');
             } catch (error) {
                 showNotification('Ошибка при удалении категории', 'error');
@@ -1275,8 +1188,15 @@
             try {
                 await sendCommand('add_template', { name: name, text: text });
                 
-                // Перезагружаем шаблоны
-                await loadSettings();
+                // Добавляем шаблон локально
+                const newTemplate = {
+                    id: Date.now(), // Временный ID
+                    name: name,
+                    text: text
+                };
+                currentTemplates.push(newTemplate);
+                
+                renderTemplates();
                 
                 document.getElementById('newTemplateName').value = '';
                 document.getElementById('newTemplateText').value = '';
@@ -1291,8 +1211,10 @@
             try {
                 await sendCommand('delete_template', { template_id: templateId });
                 
-                // Перезагружаем шаблоны
-                await loadSettings();
+                // Удаляем шаблон локально
+                currentTemplates = currentTemplates.filter(t => t.id !== templateId);
+                renderTemplates();
+                
                 showNotification('Шаблон удален', 'success');
             } catch (error) {
                 showNotification('Ошибка при удалении шаблона', 'error');
@@ -1325,34 +1247,37 @@
             // Инициализируем данные
             const hasInitialData = initializeData();
             
-            // Если есть начальные данные, сразу отображаем их
+            // Скрываем загрузку
+            document.getElementById('ticketsLoading').classList.add('hidden');
+            document.getElementById('bannedLoading').classList.add('hidden');
+            
+            // Отображаем данные
+            renderTickets();
+            updateStats();
+            
             if (hasInitialData) {
-                renderTickets();
-                updateStats();
                 showNotification('Данные загружены', 'success');
             } else {
-                // Иначе загружаем тикеты через команды
-                setTimeout(() => {
-                    loadTickets();
-                }, 1000);
+                showNotification('Панель готова к работе', 'success');
             }
         });
 
-        // Обновление данных каждые 30 секунд
+        // Периодическое обновление данных (только если нет открытых модальных окон)
         setInterval(() => {
             if (!document.querySelector('.modal[style*="block"]') && !isLoading) {
                 const activeSection = document.querySelector('.nav-btn.active');
                 if (activeSection && activeSection.textContent.includes('Тикеты')) {
-                    loadTickets();
-                } else if (activeSection && activeSection.textContent.includes('Заблокированные')) {
-                    loadBannedUsers();
+                    // Можно добавить периодическое обновление тикетов
+                    // sendCommand('get_tickets').then(...).catch(...)
                 }
             }
         }, 30000);
 
         // Показываем уведомление о готовности
         setTimeout(() => {
-            showNotification('Админ-панель готова к работе', 'success');
+            if (currentTickets.length > 0) {
+                showNotification(`Загружено ${currentTickets.length} тикетов`, 'success');
+            }
         }, 1500);
     </script>
 </body>
