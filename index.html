@@ -10,6 +10,100 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        // Кэшированные данные (инициализируются при загрузке)
+        let cachedData = {
+            tickets: [],
+            banned_users: [],
+            categories: [],
+            templates: [],
+            welcome_message: ''
+        };
+
+        function getCachedData(endpoint) {
+            switch (endpoint) {
+                case 'get_tickets':
+                    return cachedData.tickets;
+                case 'get_banned_users':
+                    return cachedData.banned_users;
+                case 'get_categories':
+                    return cachedData.categories;
+                case 'get_templates':
+                    return cachedData.templates;
+                case 'get_welcome':
+                    return { message: cachedData.welcome_message };
+                default:
+                    return [];
+            }
+        }
+
+        // Инициализация данных от бота (вызывается при загрузке приложения)
+        function initializeData() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const dataParam = urlParams.get('data');
+                
+                if (dataParam) {
+                    // Декодируем данные
+                    const decodedData = atob(decodeURIComponent(dataParam));
+                    const initialData = JSON.parse(decodedData);
+                    
+                    console.log('Получены начальные данные:', initialData);
+                    
+                    // Сохраняем данные в кэш
+                    cachedData.tickets = initialData.tickets || [];
+                    cachedData.banned_users = initialData.banned_users || [];
+                    cachedData.categories = initialData.categories || [];
+                    cachedData.templates = initialData.templates || [];
+                    cachedData.welcome_message = initialData.welcome_message || '';
+                    
+                    // Обновляем текущие данные
+                    currentTickets = cachedData.tickets;
+                    currentBannedUsers = cachedData.banned_users;
+                    currentCategories = cachedData.categories;
+                    currentTemplates = cachedData.templates;
+                    
+                    console.log('Данные успешно инициализированы');
+                    console.log('Тикетов:', currentTickets.length);
+                    console.log('Заблокированных:', currentBannedUsers.length);
+                    console.log('Категорий:', currentCategories.length);
+                    console.log('Шаблонов:', currentTemplates.length);
+                    
+                    return true;
+                }
+            } catch (error) {
+                console.error('Ошибка инициализации данных из URL:', error);
+            }
+            
+            // Если не удалось получить данные из URL, загружаем их от бота
+            console.log('Данные из URL не получены, загружаем от бота...');
+            loadInitialDataFromBot();
+            return false;
+        }
+
+        // Загрузка начальных данных от бота
+        async function loadInitialDataFromBot() {
+            console.log('Запрос начальных данных от бота...');
+            
+            try {
+                // Запрашиваем все необходимые данные
+                await Promise.all([
+                    loadDataFromBot('get_tickets'),
+                    loadDataFromBot('get_banned_users'),
+                    loadDataFromBot('get_categories'),
+                    loadDataFromBot('get_templates'),
+                    loadDataFromBot('get_welcome')
+                ]);
+                
+                console.log('Начальные данные загружены от бота');
+                
+                // Обновляем интерфейс
+                renderTickets();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки начальных данных:', error);
+                showNotification('Ошибка загрузки данных от бота', 'error');
+            }
         }
 
         body {
@@ -530,6 +624,7 @@
             <button class="nav-btn active" onclick="showSection('tickets')">📋 Тикеты</button>
             <button class="nav-btn" onclick="showSection('banned')">🚫 Заблокированные</button>
             <button class="nav-btn" onclick="showSection('settings')">⚙️ Настройки</button>
+            <button class="nav-btn" onclick="forceRefresh()" style="background: rgba(255, 165, 0, 0.2); border-color: #ffa500;">🔄 Обновить</button>
         </div>
 
         <!-- Секция тикетов -->
@@ -641,11 +736,6 @@
         // Функция отправки команд боту через WebApp
         function sendCommand(action, data = {}) {
             return new Promise((resolve, reject) => {
-                if (isLoading) {
-                    reject(new Error('Предыдущая команда ещё выполняется'));
-                    return;
-                }
-
                 const command = {
                     action: action,
                     ...data
@@ -658,10 +748,12 @@
                     // Используем правильный API WebApp для отправки данных
                     tg.sendData(commandString);
                     
-                    // Для команд, которые не требуют ответа, сразу резолвим
+                    // Для команд получения данных ждем больше времени
+                    const timeout = action.startsWith('get_') ? 3000 : 1000;
+                    
                     setTimeout(() => {
                         resolve({ success: true });
-                    }, 1000);
+                    }, timeout);
                     
                 } catch (error) {
                     console.error('Ошибка отправки команды:', error);
@@ -670,51 +762,27 @@
             });
         }
 
-        // Кэшированные данные (инициализируются при загрузке)
-        let cachedData = {
-            tickets: [],
-            banned_users: [],
-            categories: [],
-            templates: [],
-            welcome_message: ''
-        };
-
-        // Инициализация данных от бота (вызывается при загрузке приложения)
-        function initializeData() {
+        // Функция загрузки данных - теперь запрашивает свежие данные от бота
+        async function loadDataFromBot(endpoint) {
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const dataParam = urlParams.get('data');
+                isLoading = true;
                 
-                if (dataParam) {
-                    // Декодируем данные
-                    const decodedData = atob(decodeURIComponent(dataParam));
-                    const initialData = JSON.parse(decodedData);
-                    
-                    console.log('Получены начальные данные:', initialData);
-                    
-                    // Сохраняем данные в кэш
-                    cachedData.tickets = initialData.tickets || [];
-                    cachedData.banned_users = initialData.banned_users || [];
-                    cachedData.categories = initialData.categories || [];
-                    cachedData.templates = initialData.templates || [];
-                    cachedData.welcome_message = initialData.welcome_message || '';
-                    
-                    // Обновляем текущие данные
-                    currentTickets = cachedData.tickets;
-                    currentBannedUsers = cachedData.banned_users;
-                    currentCategories = cachedData.categories;
-                    currentTemplates = cachedData.templates;
-                    
-                    console.log('Данные успешно инициализированы');
-                    return true;
-                }
+                // Отправляем команду боту для получения данных
+                await sendCommand(endpoint);
+                
+                // Получаем данные из кэша (они будут обновлены ботом)
+                const data = getCachedData(endpoint);
+                console.log(`Загружены данные для ${endpoint}:`, data);
+                
+                return data || [];
+                
             } catch (error) {
-                console.error('Ошибка инициализации данных из URL:', error);
+                console.error(`Ошибка загрузки ${endpoint}:`, error);
+                showNotification(`Ошибка загрузки данных: ${error.message}`, 'error');
+                return getCachedData(endpoint) || []; // Возвращаем кэшированные данные при ошибке
+            } finally {
+                isLoading = false;
             }
-            
-            // Если не удалось получить данные из URL, используем пустые данные
-            console.log('Используются пустые данные');
-            return false;
         }
 
         // Отрисовка интерфейса
@@ -946,14 +1014,39 @@
             }
         }
 
-        // Загрузка данных
+        // Функция загрузки данных - упрощенная версия для работы с Telegram WebApp
+        async function loadDataFromBot(endpoint) {
+            try {
+                // Отправляем команду боту
+                await sendCommand(endpoint);
+                
+                // Возвращаем текущие кэшированные данные
+                // (в реальности данные обновятся при следующем открытии)
+                return getCachedData(endpoint);
+                
+            } catch (error) {
+                console.error(`Ошибка загрузки ${endpoint}:`, error);
+                showNotification(`Ошибка загрузки данных`, 'error');
+                return getCachedData(endpoint) || [];
+            }
+        }
+
+        // Упрощенная загрузка данных
         async function loadTickets() {
             document.getElementById('ticketsLoading').classList.remove('hidden');
             
             try {
-                // Используем кэшированные данные
+                console.log('Загрузка тикетов...');
+                
+                // Отправляем команду боту (для обновления данных)
+                sendCommand('get_tickets').catch(console.error);
+                
+                // Используем текущие данные
                 renderTickets();
                 updateStats();
+                
+                console.log('Тикеты отображены:', currentTickets.length);
+                
             } catch (error) {
                 console.error('Ошибка загрузки тикетов:', error);
                 showNotification('Ошибка загрузки тикетов', 'error');
@@ -966,8 +1059,16 @@
             document.getElementById('bannedLoading').classList.remove('hidden');
             
             try {
-                // Используем кэшированные данные
+                console.log('Загрузка заблокированных пользователей...');
+                
+                // Отправляем команду боту
+                sendCommand('get_banned_users').catch(console.error);
+                
+                // Используем текущие данные
                 renderBannedUsers();
+                
+                console.log('Заблокированные пользователи отображены:', currentBannedUsers.length);
+                
             } catch (error) {
                 console.error('Ошибка загрузки заблокированных:', error);
                 showNotification('Ошибка загрузки заблокированных пользователей', 'error');
@@ -978,11 +1079,22 @@
 
         async function loadSettings() {
             try {
-                // Используем кэшированные данные
+                console.log('Загрузка настроек...');
+                
+                // Отправляем команды боту
+                sendCommand('get_templates').catch(console.error);
+                sendCommand('get_categories').catch(console.error);
+                sendCommand('get_welcome').catch(console.error);
+                
+                // Используем текущие данные
                 renderTemplates();
                 renderCategories();
                 
-                document.getElementById('welcomeMessage').value = cachedData.welcome_message || '';
+                const welcomeData = getCachedData('get_welcome');
+                document.getElementById('welcomeMessage').value = welcomeData?.message || '';
+                
+                console.log('Настройки отображены');
+                
             } catch (error) {
                 console.error('Ошибка загрузки настроек:', error);
                 showNotification('Ошибка загрузки настроек', 'error');
@@ -1281,6 +1393,38 @@
             tg.close();
         });
 
+        // Обработчик получения данных от бота
+        function handleBotResponse(data) {
+            try {
+                console.log('Получен ответ от бота:', data);
+                
+                // Обновляем кэш данными от бота
+                if (data.action === 'get_tickets' && data.success) {
+                    cachedData.tickets = data.data || [];
+                    currentTickets = cachedData.tickets;
+                    console.log('Обновлены тикеты:', currentTickets.length);
+                } else if (data.action === 'get_banned_users' && data.success) {
+                    cachedData.banned_users = data.data || [];
+                    currentBannedUsers = cachedData.banned_users;
+                    console.log('Обновлены заблокированные:', currentBannedUsers.length);
+                } else if (data.action === 'get_categories' && data.success) {
+                    cachedData.categories = data.data || [];
+                    currentCategories = cachedData.categories;
+                    console.log('Обновлены категории:', currentCategories.length);
+                } else if (data.action === 'get_templates' && data.success) {
+                    cachedData.templates = data.data || [];
+                    currentTemplates = cachedData.templates;
+                    console.log('Обновлены шаблоны:', currentTemplates.length);
+                } else if (data.action === 'get_welcome' && data.success) {
+                    cachedData.welcome_message = data.data?.message || '';
+                    console.log('Обновлено приветствие');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка обработки ответа от бота:', error);
+            }
+        }
+
         // Инициализация приложения
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Админ-панель загружена');
@@ -1288,27 +1432,62 @@
             // Инициализируем данные
             const hasInitialData = initializeData();
             
-            // Отображаем данные
-            renderTickets();
-            updateStats();
-            
             if (hasInitialData) {
-                showNotification('Данные загружены успешно', 'success');
+                // Если есть начальные данные, сразу отображаем их
+                renderTickets();
+                updateStats();
+                showNotification('Данные загружены из URL', 'success');
             } else {
-                showNotification('Панель готова к работе', 'success');
+                // Иначе показываем загрузку и запрашиваем данные от бота
+                showNotification('Загрузка данных от бота...', 'info');
+                
+                // Запрашиваем данные с задержкой
+                setTimeout(() => {
+                    loadTickets(); // Это загрузит тикеты и покажет их
+                }, 1000);
             }
+            
+            // Показываем, что панель готова
+            setTimeout(() => {
+                showNotification('Админ-панель готова к работе', 'success');
+            }, 2000);
         });
 
-        // Обновление данных каждые 30 секунд (только для активной секции тикетов)
+        // Автоматическое обновление данных каждые 30 секунд
         setInterval(() => {
             if (!document.querySelector('.modal[style*="block"]') && !isLoading) {
                 const activeSection = document.querySelector('.nav-btn.active');
                 if (activeSection && activeSection.textContent.includes('Тикеты')) {
-                    // Здесь можно добавить логику обновления данных
-                    console.log('Автообновление данных...');
+                    console.log('Автообновление тикетов...');
+                    loadTickets();
+                } else if (activeSection && activeSection.textContent.includes('Заблокированные')) {
+                    console.log('Автообновление заблокированных...');
+                    loadBannedUsers();
                 }
             }
         }, 30000);
+
+        // Функция для принудительного обновления данных
+        function forceRefresh() {
+            console.log('Принудительное обновление данных...');
+            const activeSection = document.querySelector('.nav-btn.active');
+            
+            if (activeSection && activeSection.textContent.includes('Тикеты')) {
+                loadTickets();
+            } else if (activeSection && activeSection.textContent.includes('Заблокированные')) {
+                loadBannedUsers();
+            } else if (activeSection && activeSection.textContent.includes('Настройки')) {
+                loadSettings();
+            }
+        }
+
+        // Добавляем кнопку обновления (для отладки)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                e.preventDefault();
+                forceRefresh();
+            }
+        });
     </script>
 </body>
 </html>
