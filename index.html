@@ -10,100 +10,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        // Кэшированные данные (инициализируются при загрузке)
-        let cachedData = {
-            tickets: [],
-            banned_users: [],
-            categories: [],
-            templates: [],
-            welcome_message: ''
-        };
-
-        function getCachedData(endpoint) {
-            switch (endpoint) {
-                case 'get_tickets':
-                    return cachedData.tickets;
-                case 'get_banned_users':
-                    return cachedData.banned_users;
-                case 'get_categories':
-                    return cachedData.categories;
-                case 'get_templates':
-                    return cachedData.templates;
-                case 'get_welcome':
-                    return { message: cachedData.welcome_message };
-                default:
-                    return [];
-            }
-        }
-
-        // Инициализация данных от бота (вызывается при загрузке приложения)
-        function initializeData() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const dataParam = urlParams.get('data');
-                
-                if (dataParam) {
-                    // Декодируем данные
-                    const decodedData = atob(decodeURIComponent(dataParam));
-                    const initialData = JSON.parse(decodedData);
-                    
-                    console.log('Получены начальные данные:', initialData);
-                    
-                    // Сохраняем данные в кэш
-                    cachedData.tickets = initialData.tickets || [];
-                    cachedData.banned_users = initialData.banned_users || [];
-                    cachedData.categories = initialData.categories || [];
-                    cachedData.templates = initialData.templates || [];
-                    cachedData.welcome_message = initialData.welcome_message || '';
-                    
-                    // Обновляем текущие данные
-                    currentTickets = cachedData.tickets;
-                    currentBannedUsers = cachedData.banned_users;
-                    currentCategories = cachedData.categories;
-                    currentTemplates = cachedData.templates;
-                    
-                    console.log('Данные успешно инициализированы');
-                    console.log('Тикетов:', currentTickets.length);
-                    console.log('Заблокированных:', currentBannedUsers.length);
-                    console.log('Категорий:', currentCategories.length);
-                    console.log('Шаблонов:', currentTemplates.length);
-                    
-                    return true;
-                }
-            } catch (error) {
-                console.error('Ошибка инициализации данных из URL:', error);
-            }
-            
-            // Если не удалось получить данные из URL, загружаем их от бота
-            console.log('Данные из URL не получены, загружаем от бота...');
-            loadInitialDataFromBot();
-            return false;
-        }
-
-        // Загрузка начальных данных от бота
-        async function loadInitialDataFromBot() {
-            console.log('Запрос начальных данных от бота...');
-            
-            try {
-                // Запрашиваем все необходимые данные
-                await Promise.all([
-                    loadDataFromBot('get_tickets'),
-                    loadDataFromBot('get_banned_users'),
-                    loadDataFromBot('get_categories'),
-                    loadDataFromBot('get_templates'),
-                    loadDataFromBot('get_welcome')
-                ]);
-                
-                console.log('Начальные данные загружены от бота');
-                
-                // Обновляем интерфейс
-                renderTickets();
-                updateStats();
-                
-            } catch (error) {
-                console.error('Ошибка загрузки начальных данных:', error);
-                showNotification('Ошибка загрузки данных от бота', 'error');
-            }
         }
 
         body {
@@ -733,6 +639,75 @@
         let selectedUser = null;
         let isLoading = false;
 
+        // Кэшированные данные (инициализируются при загрузке)
+        let cachedData = {
+            tickets: [],
+            banned_users: [],
+            categories: [],
+            templates: [],
+            welcome_message: ''
+        };
+
+        function getCachedData(endpoint) {
+            switch (endpoint) {
+                case 'get_tickets':
+                    return cachedData.tickets;
+                case 'get_banned_users':
+                    return cachedData.banned_users;
+                case 'get_categories':
+                    return cachedData.categories;
+                case 'get_templates':
+                    return cachedData.templates;
+                case 'get_welcome':
+                    return { message: cachedData.welcome_message };
+                default:
+                    return [];
+            }
+        }
+
+        // Инициализация данных от бота (вызывается при загрузке приложения)
+        function initializeData() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const dataParam = urlParams.get('data');
+                
+                if (dataParam) {
+                    // Декодируем данные
+                    const decodedData = atob(decodeURIComponent(dataParam));
+                    const initialData = JSON.parse(decodedData);
+                    
+                    console.log('Получены начальные данные:', initialData);
+                    
+                    // Сохраняем данные в кэш
+                    cachedData.tickets = initialData.tickets || [];
+                    cachedData.banned_users = initialData.banned_users || [];
+                    cachedData.categories = initialData.categories || [];
+                    cachedData.templates = initialData.templates || [];
+                    cachedData.welcome_message = initialData.welcome_message || '';
+                    
+                    // Обновляем текущие данные
+                    currentTickets = cachedData.tickets;
+                    currentBannedUsers = cachedData.banned_users;
+                    currentCategories = cachedData.categories;
+                    currentTemplates = cachedData.templates;
+                    
+                    console.log('Данные успешно инициализированы');
+                    console.log('Тикетов:', currentTickets.length);
+                    console.log('Заблокированных:', currentBannedUsers.length);
+                    console.log('Категорий:', currentCategories.length);
+                    console.log('Шаблонов:', currentTemplates.length);
+                    
+                    return true;
+                }
+            } catch (error) {
+                console.error('Ошибка инициализации данных из URL:', error);
+            }
+            
+            // Если не удалось получить данные из URL, загружаем их от бота
+            console.log('Данные из URL не получены, загружаем от бота...');
+            return false;
+        }
+
         // Функция отправки команд боту через WebApp
         function sendCommand(action, data = {}) {
             return new Promise((resolve, reject) => {
@@ -760,29 +735,6 @@
                     reject(error);
                 }
             });
-        }
-
-        // Функция загрузки данных - теперь запрашивает свежие данные от бота
-        async function loadDataFromBot(endpoint) {
-            try {
-                isLoading = true;
-                
-                // Отправляем команду боту для получения данных
-                await sendCommand(endpoint);
-                
-                // Получаем данные из кэша (они будут обновлены ботом)
-                const data = getCachedData(endpoint);
-                console.log(`Загружены данные для ${endpoint}:`, data);
-                
-                return data || [];
-                
-            } catch (error) {
-                console.error(`Ошибка загрузки ${endpoint}:`, error);
-                showNotification(`Ошибка загрузки данных: ${error.message}`, 'error');
-                return getCachedData(endpoint) || []; // Возвращаем кэшированные данные при ошибке
-            } finally {
-                isLoading = false;
-            }
         }
 
         // Отрисовка интерфейса
@@ -890,604 +842,5 @@
                     <button class="btn" onclick="deleteTemplate(${template.id})" style="margin-top: 10px; background: rgba(255, 107, 107, 0.2);">
                         🗑️ Удалить
                     </button>
-                </div>
-            `).join('');
-
-            // Обновляем список в модальном окне
-            const modalList = document.getElementById('responseTemplateList');
-            modalList.innerHTML = currentTemplates.map(template => `
-                <div class="template-item" onclick="selectTemplate('${escapeHtml(template.text).replace(/'/g, "\\'")}')">
-                    <div class="template-name">${escapeHtml(template.name)}</div>
-                    <div class="template-text">${escapeHtml(template.text)}</div>
-                </div>
-            `).join('');
-        }
-
-        function renderCategories() {
-            const container = document.getElementById('categoriesList');
-            
-            if (!Array.isArray(currentCategories)) {
-                container.innerHTML = '<div>Ошибка загрузки категорий</div>';
-                return;
-            }
-
-            container.innerHTML = currentCategories.map(category => `
-                <div class="template-item">
-                    <div class="template-name">${escapeHtml(category.name)}</div>
-                    <button class="btn" onclick="deleteCategory(${category.id})" style="margin-top: 10px; background: rgba(255, 107, 107, 0.2);">
-                        🗑️ Удалить
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        // Вспомогательные функции
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return 'Не указано';
-            
-            try {
-                const date = new Date(dateString);
-                const now = new Date();
-                const diffMs = now - date;
-                const diffMins = Math.floor(diffMs / 60000);
-                const diffHours = Math.floor(diffMins / 60);
-                const diffDays = Math.floor(diffHours / 24);
-
-                if (diffMins < 1) {
-                    return 'Только что';
-                } else if (diffMins < 60) {
-                    return `${diffMins} мин назад`;
-                } else if (diffHours < 24) {
-                    return `${diffHours} ч назад`;
-                } else if (diffDays < 7) {
-                    return `${diffDays} дн назад`;
-                } else {
-                    return date.toLocaleDateString('ru-RU');
-                }
-            } catch (error) {
-                return dateString;
-            }
-        }
-
-        function updateStats() {
-            const pendingCount = Array.isArray(currentTickets) ? 
-                currentTickets.filter(t => t.status === 'pending').length : 0;
-            const viewedCount = Array.isArray(currentTickets) ? 
-                currentTickets.filter(t => t.status === 'viewed').length : 0;
-            const bannedCount = Array.isArray(currentBannedUsers) ? 
-                currentBannedUsers.length : 0;
-
-            document.getElementById('pendingCount').textContent = pendingCount;
-            document.getElementById('viewedCount').textContent = viewedCount;
-            document.getElementById('bannedCount').textContent = bannedCount;
-        }
-
-        function showNotification(message, type = 'info') {
-            // Удаляем существующие уведомления
-            document.querySelectorAll('.notification').forEach(n => n.remove());
-            
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 5000);
-        }
-
-        // Навигация
-        function showSection(sectionName) {
-            // Скрываем все секции
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('hidden');
-            });
-
-            // Убираем активный класс с кнопок
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Показываем нужную секцию
-            document.getElementById(sectionName + 'Section').classList.remove('hidden');
-            event.target.classList.add('active');
-
-            // Загружаем данные для секции
-            switch (sectionName) {
-                case 'tickets':
-                    loadTickets();
-                    break;
-                case 'banned':
-                    loadBannedUsers();
-                    break;
-                case 'settings':
-                    loadSettings();
-                    break;
-            }
-        }
-
-        // Функция загрузки данных - упрощенная версия для работы с Telegram WebApp
-        async function loadDataFromBot(endpoint) {
-            try {
-                // Отправляем команду боту
-                await sendCommand(endpoint);
+                </div> 
                 
-                // Возвращаем текущие кэшированные данные
-                // (в реальности данные обновятся при следующем открытии)
-                return getCachedData(endpoint);
-                
-            } catch (error) {
-                console.error(`Ошибка загрузки ${endpoint}:`, error);
-                showNotification(`Ошибка загрузки данных`, 'error');
-                return getCachedData(endpoint) || [];
-            }
-        }
-
-        // Упрощенная загрузка данных
-        async function loadTickets() {
-            document.getElementById('ticketsLoading').classList.remove('hidden');
-            
-            try {
-                console.log('Загрузка тикетов...');
-                
-                // Отправляем команду боту (для обновления данных)
-                sendCommand('get_tickets').catch(console.error);
-                
-                // Используем текущие данные
-                renderTickets();
-                updateStats();
-                
-                console.log('Тикеты отображены:', currentTickets.length);
-                
-            } catch (error) {
-                console.error('Ошибка загрузки тикетов:', error);
-                showNotification('Ошибка загрузки тикетов', 'error');
-            } finally {
-                document.getElementById('ticketsLoading').classList.add('hidden');
-            }
-        }
-
-        async function loadBannedUsers() {
-            document.getElementById('bannedLoading').classList.remove('hidden');
-            
-            try {
-                console.log('Загрузка заблокированных пользователей...');
-                
-                // Отправляем команду боту
-                sendCommand('get_banned_users').catch(console.error);
-                
-                // Используем текущие данные
-                renderBannedUsers();
-                
-                console.log('Заблокированные пользователи отображены:', currentBannedUsers.length);
-                
-            } catch (error) {
-                console.error('Ошибка загрузки заблокированных:', error);
-                showNotification('Ошибка загрузки заблокированных пользователей', 'error');
-            } finally {
-                document.getElementById('bannedLoading').classList.add('hidden');
-            }
-        }
-
-        async function loadSettings() {
-            try {
-                console.log('Загрузка настроек...');
-                
-                // Отправляем команды боту
-                sendCommand('get_templates').catch(console.error);
-                sendCommand('get_categories').catch(console.error);
-                sendCommand('get_welcome').catch(console.error);
-                
-                // Используем текущие данные
-                renderTemplates();
-                renderCategories();
-                
-                const welcomeData = getCachedData('get_welcome');
-                document.getElementById('welcomeMessage').value = welcomeData?.message || '';
-                
-                console.log('Настройки отображены');
-                
-            } catch (error) {
-                console.error('Ошибка загрузки настроек:', error);
-                showNotification('Ошибка загрузки настроек', 'error');
-            }
-        }
-
-        // Действия с тикетами
-        async function viewTicket(ticketId) {
-            try {
-                await sendCommand('view_ticket', { ticket_id: ticketId });
-                
-                // Обновляем статус тикета локально
-                const ticket = currentTickets.find(t => t.id === ticketId);
-                if (ticket) {
-                    ticket.status = 'viewed';
-                    renderTickets();
-                    updateStats();
-                }
-                
-                showNotification('Тикет отмечен как просмотренный', 'success');
-            } catch (error) {
-                showNotification('Ошибка при просмотре тикета', 'error');
-            }
-        }
-
-        async function rejectTicket(ticketId) {
-            try {
-                await sendCommand('reject_ticket', { ticket_id: ticketId });
-                
-                // Удаляем тикет из списка
-                currentTickets = currentTickets.filter(t => t.id !== ticketId);
-                renderTickets();
-                updateStats();
-                
-                showNotification('Тикет отклонен', 'success');
-            } catch (error) {
-                showNotification('Ошибка при отклонении тикета', 'error');
-            }
-        }
-
-        // Модальные окна
-        function openResponseModal(ticketId) {
-            const ticket = currentTickets.find(t => t.id === ticketId);
-            if (!ticket) return;
-
-            selectedTicket = ticket;
-            document.getElementById('responseTicketId').textContent = ticketId;
-            document.getElementById('responseText').value = '';
-            document.getElementById('responseModal').style.display = 'block';
-        }
-
-        function openWarnModal(ticketId) {
-            const ticket = currentTickets.find(t => t.id === ticketId);
-            if (!ticket) return;
-
-            selectedUser = {
-                user_id: ticket.user_id,
-                username: ticket.username,
-                ticket_id: ticketId
-            };
-            
-            document.getElementById('warnUsername').textContent = ticket.username;
-            document.getElementById('warnModal').style.display = 'block';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            selectedTicket = null;
-            selectedUser = null;
-        }
-
-        function selectTemplate(templateText) {
-            document.getElementById('responseText').value = templateText;
-        }
-
-        async function sendResponse() {
-            const responseText = document.getElementById('responseText').value.trim();
-            if (!responseText) {
-                showNotification('Введите текст ответа', 'error');
-                return;
-            }
-
-            if (!selectedTicket) return;
-
-            const sendBtn = document.getElementById('sendResponseBtn');
-            sendBtn.disabled = true;
-            sendBtn.textContent = 'Отправка...';
-
-            try {
-                await sendCommand('respond_ticket', {
-                    ticket_id: selectedTicket.id,
-                    response: responseText
-                });
-
-                // Удаляем тикет из списка
-                currentTickets = currentTickets.filter(t => t.id !== selectedTicket.id);
-                renderTickets();
-                updateStats();
-                
-                closeModal('responseModal');
-                showNotification('Ответ отправлен', 'success');
-            } catch (error) {
-                showNotification('Ошибка при отправке ответа', 'error');
-            } finally {
-                sendBtn.disabled = false;
-                sendBtn.textContent = 'Отправить';
-            }
-        }
-
-        async function warnUser() {
-            if (!selectedUser) return;
-
-            try {
-                await sendCommand('warn_user', {
-                    user_id: selectedUser.user_id
-                });
-
-                closeModal('warnModal');
-                showNotification('Предупреждение отправлено', 'success');
-            } catch (error) {
-                showNotification('Ошибка при отправке предупреждения', 'error');
-            }
-        }
-
-        async function banUser() {
-            if (!selectedUser) return;
-
-            try {
-                await sendCommand('ban_user', {
-                    user_id: selectedUser.user_id,
-                    ticket_id: selectedUser.ticket_id
-                });
-
-                // Добавляем пользователя в список заблокированных
-                const ticket = currentTickets.find(t => t.id === selectedUser.ticket_id);
-                if (ticket) {
-                    currentBannedUsers.unshift({
-                        user_id: selectedUser.user_id,
-                        username: selectedUser.username,
-                        banned_at: new Date().toISOString(),
-                        category_name: ticket.category_name,
-                        last_question: ticket.question,
-                        ticket_created_at: ticket.created_at
-                    });
-                }
-
-                // Удаляем тикет из списка
-                currentTickets = currentTickets.filter(t => t.id !== selectedUser.ticket_id);
-                renderTickets();
-                updateStats();
-                
-                closeModal('warnModal');
-                showNotification('Пользователь заблокирован', 'success');
-            } catch (error) {
-                showNotification('Ошибка при блокировке пользователя', 'error');
-            }
-        }
-
-        async function unbanUser(userId) {
-            try {
-                await sendCommand('unban_user', { user_id: userId });
-                
-                // Удаляем пользователя из списка заблокированных
-                currentBannedUsers = currentBannedUsers.filter(u => u.user_id !== userId);
-                renderBannedUsers();
-                updateStats();
-                
-                showNotification('Пользователь разблокирован', 'success');
-            } catch (error) {
-                showNotification('Ошибка при разблокировке пользователя', 'error');
-            }
-        }
-
-        // Настройки
-        async function updateWelcomeMessage() {
-            const message = document.getElementById('welcomeMessage').value.trim();
-            if (!message) {
-                showNotification('Введите приветственное сообщение', 'error');
-                return;
-            }
-
-            try {
-                await sendCommand('update_welcome', { message: message });
-                cachedData.welcome_message = message;
-                showNotification('Приветственное сообщение обновлено', 'success');
-            } catch (error) {
-                showNotification('Ошибка при обновлении приветствия', 'error');
-            }
-        }
-
-        async function addCategory() {
-            const name = document.getElementById('newCategoryName').value.trim();
-            if (!name) {
-                showNotification('Введите название категории', 'error');
-                return;
-            }
-
-            try {
-                await sendCommand('add_category', { name: name });
-                
-                // Добавляем категорию локально
-                const newCategory = {
-                    id: Date.now(), // Временный ID
-                    name: name
-                };
-                currentCategories.push(newCategory);
-                cachedData.categories.push(newCategory);
-                
-                renderCategories();
-                document.getElementById('newCategoryName').value = '';
-                
-                showNotification('Категория добавлена', 'success');
-            } catch (error) {
-                showNotification('Ошибка при добавлении категории', 'error');
-            }
-        }
-
-        async function deleteCategory(categoryId) {
-            try {
-                await sendCommand('delete_category', { category_id: categoryId });
-                
-                // Удаляем категорию локально
-                currentCategories = currentCategories.filter(c => c.id !== categoryId);
-                cachedData.categories = cachedData.categories.filter(c => c.id !== categoryId);
-                
-                renderCategories();
-                showNotification('Категория удалена', 'success');
-            } catch (error) {
-                showNotification('Ошибка при удалении категории', 'error');
-            }
-        }
-
-        async function addTemplate() {
-            const name = document.getElementById('newTemplateName').value.trim();
-            const text = document.getElementById('newTemplateText').value.trim();
-            
-            if (!name || !text) {
-                showNotification('Заполните все поля', 'error');
-                return;
-            }
-
-            try {
-                await sendCommand('add_template', { name: name, text: text });
-                
-                // Добавляем шаблон локально
-                const newTemplate = {
-                    id: Date.now(), // Временный ID
-                    name: name,
-                    text: text
-                };
-                currentTemplates.push(newTemplate);
-                cachedData.templates.push(newTemplate);
-                
-                renderTemplates();
-                
-                document.getElementById('newTemplateName').value = '';
-                document.getElementById('newTemplateText').value = '';
-                
-                showNotification('Шаблон добавлен', 'success');
-            } catch (error) {
-                showNotification('Ошибка при добавлении шаблона', 'error');
-            }
-        }
-
-        async function deleteTemplate(templateId) {
-            try {
-                await sendCommand('delete_template', { template_id: templateId });
-                
-                // Удаляем шаблон локально
-                currentTemplates = currentTemplates.filter(t => t.id !== templateId);
-                cachedData.templates = cachedData.templates.filter(t => t.id !== templateId);
-                
-                renderTemplates();
-                showNotification('Шаблон удален', 'success');
-            } catch (error) {
-                showNotification('Ошибка при удалении шаблона', 'error');
-            }
-        }
-
-        // Закрытие модальных окон по клику вне них
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.style.display = 'none';
-                selectedTicket = null;
-                selectedUser = null;
-            }
-        });
-
-        // Обработка событий от Telegram WebApp
-        tg.onEvent('mainButtonClicked', () => {
-            // Обработка нажатия основной кнопки
-        });
-
-        tg.onEvent('backButtonClicked', () => {
-            // Обработка нажатия кнопки назад
-            tg.close();
-        });
-
-        // Обработчик получения данных от бота
-        function handleBotResponse(data) {
-            try {
-                console.log('Получен ответ от бота:', data);
-                
-                // Обновляем кэш данными от бота
-                if (data.action === 'get_tickets' && data.success) {
-                    cachedData.tickets = data.data || [];
-                    currentTickets = cachedData.tickets;
-                    console.log('Обновлены тикеты:', currentTickets.length);
-                } else if (data.action === 'get_banned_users' && data.success) {
-                    cachedData.banned_users = data.data || [];
-                    currentBannedUsers = cachedData.banned_users;
-                    console.log('Обновлены заблокированные:', currentBannedUsers.length);
-                } else if (data.action === 'get_categories' && data.success) {
-                    cachedData.categories = data.data || [];
-                    currentCategories = cachedData.categories;
-                    console.log('Обновлены категории:', currentCategories.length);
-                } else if (data.action === 'get_templates' && data.success) {
-                    cachedData.templates = data.data || [];
-                    currentTemplates = cachedData.templates;
-                    console.log('Обновлены шаблоны:', currentTemplates.length);
-                } else if (data.action === 'get_welcome' && data.success) {
-                    cachedData.welcome_message = data.data?.message || '';
-                    console.log('Обновлено приветствие');
-                }
-                
-            } catch (error) {
-                console.error('Ошибка обработки ответа от бота:', error);
-            }
-        }
-
-        // Инициализация приложения
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('Админ-панель загружена');
-            
-            // Инициализируем данные
-            const hasInitialData = initializeData();
-            
-            if (hasInitialData) {
-                // Если есть начальные данные, сразу отображаем их
-                renderTickets();
-                updateStats();
-                showNotification('Данные загружены из URL', 'success');
-            } else {
-                // Иначе показываем загрузку и запрашиваем данные от бота
-                showNotification('Загрузка данных от бота...', 'info');
-                
-                // Запрашиваем данные с задержкой
-                setTimeout(() => {
-                    loadTickets(); // Это загрузит тикеты и покажет их
-                }, 1000);
-            }
-            
-            // Показываем, что панель готова
-            setTimeout(() => {
-                showNotification('Админ-панель готова к работе', 'success');
-            }, 2000);
-        });
-
-        // Автоматическое обновление данных каждые 30 секунд
-        setInterval(() => {
-            if (!document.querySelector('.modal[style*="block"]') && !isLoading) {
-                const activeSection = document.querySelector('.nav-btn.active');
-                if (activeSection && activeSection.textContent.includes('Тикеты')) {
-                    console.log('Автообновление тикетов...');
-                    loadTickets();
-                } else if (activeSection && activeSection.textContent.includes('Заблокированные')) {
-                    console.log('Автообновление заблокированных...');
-                    loadBannedUsers();
-                }
-            }
-        }, 30000);
-
-        // Функция для принудительного обновления данных
-        function forceRefresh() {
-            console.log('Принудительное обновление данных...');
-            const activeSection = document.querySelector('.nav-btn.active');
-            
-            if (activeSection && activeSection.textContent.includes('Тикеты')) {
-                loadTickets();
-            } else if (activeSection && activeSection.textContent.includes('Заблокированные')) {
-                loadBannedUsers();
-            } else if (activeSection && activeSection.textContent.includes('Настройки')) {
-                loadSettings();
-            }
-        }
-
-        // Добавляем кнопку обновления (для отладки)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
-                e.preventDefault();
-                forceRefresh();
-            }
-        });
-    </script>
-</body>
-</html>
