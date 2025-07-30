@@ -751,42 +751,44 @@
                 return;
             }
 
-            container.innerHTML = currentTickets.map(ticket => `
-                <div class="ticket" data-ticket-id="${ticket.id}">
-                    <div class="ticket-header">
-                        <div class="ticket-info">
-                            <div class="ticket-id">Тикет #${ticket.id}</div>
-                            <div class="ticket-category">${ticket.category_name}</div>
-                            <div class="ticket-user">👤 ${ticket.username}</div>
-                            <div class="ticket-time">🕐 ${formatDate(ticket.created_at)}</div>
-                        </div>
-                    </div>
-                    <div class="ticket-question">
-                        ${escapeHtml(ticket.question)}
-                    </div>
-                    ${ticket.photo_id ? `
-                        <div class="ticket-photo">
-                            <div style="padding: 20px; text-align: center; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 10px 0;">
-                                📷 Прикреплено фото
+            container.innerHTML = currentTickets.map(ticket => {
+                return `
+                    <div class="ticket" data-ticket-id="${ticket.id}">
+                        <div class="ticket-header">
+                            <div class="ticket-info">
+                                <div class="ticket-id">Тикет #${ticket.id}</div>
+                                <div class="ticket-category">${ticket.category_name}</div>
+                                <div class="ticket-user">👤 ${ticket.username}</div>
+                                <div class="ticket-time">🕐 ${formatDate(ticket.created_at)}</div>
                             </div>
                         </div>
-                    ` : ''}
-                    <div class="ticket-actions">
-                        <button class="btn btn-view" onclick="viewTicket(${ticket.id})">
-                            👀 Просмотреть
-                        </button>
-                        <button class="btn btn-reject" onclick="rejectTicket(${ticket.id})">
-                            ❌ Отклонить
-                        </button>
-                        <button class="btn btn-respond" onclick="openResponseModal(${ticket.id})">
-                            💬 Ответить
-                        </button>
-                        <button class="btn btn-warn" onclick="openWarnModal(${ticket.id})">
-                            ❗ Действия
-                        </button>
+                        <div class="ticket-question">
+                            ${escapeHtml(ticket.question)}
+                        </div>
+                        ${ticket.photo_id ? `
+                            <div class="ticket-photo">
+                                <div style="padding: 20px; text-align: center; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 10px 0;">
+                                    📷 Прикреплено фото
+                                </div>
+                            </div>
+                        ` : ''}
+                        <div class="ticket-actions">
+                            <button class="btn btn-view" onclick="viewTicket(${ticket.id})">
+                                👀 Просмотреть
+                            </button>
+                            <button class="btn btn-reject" onclick="rejectTicket(${ticket.id})">
+                                ❌ Отклонить
+                            </button>
+                            <button class="btn btn-respond" onclick="openResponseModal(${ticket.id})">
+                                💬 Ответить
+                            </button>
+                            <button class="btn btn-warn" onclick="openWarnModal(${ticket.id})">
+                                ❗ Действия
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function renderBannedUsers() {
@@ -802,29 +804,31 @@
                 return;
             }
 
-            container.innerHTML = currentBannedUsers.map(user => `
-                <div class="banned-user">
-                    <div class="banned-user-header">
-                        <div class="banned-user-info">
-                            <div class="banned-username">👤 ${user.username}</div>
-                            <div class="banned-date">🚫 Заблокирован: ${formatDate(user.banned_at)}</div>
-                        </div>
-                        <button class="btn btn-primary" onclick="unbanUser(${user.user_id})">
-                            ✅ Разблокировать
-                        </button>
-                    </div>
-                    ${user.last_question ? `
-                        <div class="banned-ticket-info">
-                            <div style="margin-bottom: 5px;"><strong>Категория:</strong> ${user.category_name || 'Не указана'}</div>
-                            <div style="margin-bottom: 5px;"><strong>Последнее сообщение:</strong></div>
-                            <div style="font-style: italic; opacity: 0.8;">${escapeHtml(user.last_question)}</div>
-                            <div style="margin-top: 5px; font-size: 12px; opacity: 0.6;">
-                                📅 ${formatDate(user.ticket_created_at)}
+            container.innerHTML = currentBannedUsers.map(user => {
+                return `
+                    <div class="banned-user">
+                        <div class="banned-user-header">
+                            <div class="banned-user-info">
+                                <div class="banned-username">👤 ${user.username}</div>
+                                <div class="banned-date">🚫 Заблокирован: ${formatDate(user.banned_at)}</div>
                             </div>
+                            <button class="btn btn-primary" onclick="unbanUser(${user.user_id})">
+                                ✅ Разблокировать
+                            </button>
                         </div>
-                    ` : ''}
-                </div>
-            `).join('');
+                        ${user.last_question ? `
+                            <div class="banned-ticket-info">
+                                <div style="margin-bottom: 5px;"><strong>Категория:</strong> ${user.category_name || 'Не указана'}</div>
+                                <div style="margin-bottom: 5px;"><strong>Последнее сообщение:</strong></div>
+                                <div style="font-style: italic; opacity: 0.8;">${escapeHtml(user.last_question)}</div>
+                                <div style="margin-top: 5px; font-size: 12px; opacity: 0.6;">
+                                    📅 ${formatDate(user.ticket_created_at)}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderTemplates() {
@@ -842,5 +846,4 @@
                     <button class="btn" onclick="deleteTemplate(${template.id})" style="margin-top: 10px; background: rgba(255, 107, 107, 0.2);">
                         🗑️ Удалить
                     </button>
-                </div> 
-                
+                </div>
